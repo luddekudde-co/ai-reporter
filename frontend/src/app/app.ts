@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -9,4 +10,12 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
   protected title = 'ai-reporter';
+
+  constructor(private http: HttpClient) {}
+
+  helloWorld() {
+    this.http.get('/api', { responseType: 'text' }).subscribe(res => {
+      console.log(res);
+    });
+  }
 }
