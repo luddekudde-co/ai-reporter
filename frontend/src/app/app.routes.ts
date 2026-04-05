@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { FeedComponent } from './features/feed/feed.component';
+import { HomePage } from './pages/home-page/home-page';
 
 export const routes: Routes = [
-  { path: '', component: FeedComponent }
+  { path: '', component: HomePage }
 ];

@@ -5,9 +5,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-feed',
+  selector: 'app-home-page-hero',
   standalone: true,
-  templateUrl: './feed.component.html',
-  styleUrl: './feed.component.scss'
+  templateUrl: './home-page-hero.component.html',
+  styleUrl: './home-page-hero.component.scss'
 })
-export class FeedComponent {}
+export class HomePageHeroComponent {}
