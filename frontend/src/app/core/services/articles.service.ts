@@ -1,0 +1,33 @@
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ApiService } from './api.service';
+
+export interface Article {
+  id: number;
+  title: string;
+  url: string;
+  summary: string | null;
+  source: string;
+  publishedAt: string;
+  createdAt: string;
+}
+
+export interface ArticlesResponse {
+  data: Article[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+@Injectable({ providedIn: 'root' })
+export class ArticlesService {
+  constructor(private readonly api: ApiService) {}
+
+  getArticles(page = 1, limit = 20): Observable<ArticlesResponse> {
+    return this.api.get<ArticlesResponse>('articles', { page, limit });
+  }
+
+  getArticle(id: number): Observable<Article> {
+    return this.api.get<Article>(`articles/${id}`);
+  }
+}
