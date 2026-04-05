@@ -1,0 +1,26 @@
+.c-hero {
+  background: var(--color-dark);
+  height: 240px;
+  padding: 36px 64px 0;
+}
+
+.c-hero-meta {
+  color: var(--color-muted);
+  font-size: 12px;
+  margin: 0 0 8px;
+}
+
+.c-hero-title {
+  font-size: 38px;
+  max-width: 800px;
+  line-height: 1.2;
+  margin: 0 0 16px;
+}
+
+.c-hero-description {
+  color: var(--color-muted);
+  font-size: 15px;
+  max-width: 680px;
+  line-height: 1.5;
+  margin: 0;
+}
