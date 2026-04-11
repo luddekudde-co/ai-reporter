@@ -12,7 +12,9 @@ export class AiProcessingProcessor extends WorkerHost {
   }
 
   async process(job: Job<{ articleId: number }>): Promise<void> {
-    this.logger.debug(`Processing job ${job.id} for article ${job.data.articleId}`);
+    this.logger.debug(
+      `Processing job ${job.id} for article ${job.data.articleId}`,
+    );
     await this.aiProcessingService.processArticle(job.data.articleId);
   }
 }

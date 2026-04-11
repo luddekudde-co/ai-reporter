@@ -5,6 +5,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import OpenAI from 'openai';
 import { PrismaService } from '../prisma/prisma.service';
+import { processorPrompt } from './prompts/processor-prompt';
 
 interface AiResult {
   summary: string;
@@ -34,16 +35,11 @@ export class AiProcessingService {
 
     this.logger.log(`Processing article ${id}: "${article.title}"`);
 
-    const prompt = `You are an AI news analyst. Given the article title and raw snippet below, return a JSON object with exactly these fields:
-- "summary": a clear 2-3 sentence summary of the article
-- "category": a single short label for the topic (e.g. "LLMs", "Robotics", "Policy", "Research", "Funding", "Products", "Safety")
-- "impactLevel": one of "LOW", "MEDIUM", or "HIGH" based on how significant this news is for the AI industry
-
-Title: ${article.title}
-Source: ${article.source}
-Snippet: ${article.summary ?? '(no snippet available)'}
-
-Respond only with valid JSON.`;
+    const prompt = processorPrompt(
+      article.title,
+      article.source,
+      article.summary ?? 'no snippet available',
+    );
 
     try {
       const response = await this.openai.chat.completions.create({
@@ -64,15 +60,21 @@ Respond only with valid JSON.`;
         data: { summary, category, impactLevel, aiProcessed: true },
       });
 
-      this.logger.log(`Article ${id} processed — category: ${category}, impact: ${impactLevel}`);
+      this.logger.log(
+        `Article ${id} processed — category: ${category}, impact: ${impactLevel}`,
+      );
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      this.logger.error(`Failed to process article ${id} ("${article.title}"): ${message}`);
+      this.logger.error(
+        `Failed to process article ${id} ("${article.title}"): ${message}`,
+      );
       throw err;
     }
   }
 
-  private parseImpactLevel(value: string | undefined): 'LOW' | 'MEDIUM' | 'HIGH' {
+  private parseImpactLevel(
+    value: string | undefined,
+  ): 'LOW' | 'MEDIUM' | 'HIGH' {
     if (value === 'LOW' || value === 'MEDIUM' || value === 'HIGH') return value;
     return 'MEDIUM';
   }
