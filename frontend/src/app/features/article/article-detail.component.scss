@@ -1,0 +1,120 @@
+.c-article-detail {
+  &__state {
+    color: var(--color-body-text);
+    text-align: center;
+    padding: 4rem 64px;
+  }
+
+  &__hero {
+    background: var(--color-dark);
+    padding: 32px 64px 48px;
+  }
+
+  &__back {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-muted);
+    text-decoration: none;
+    margin-bottom: 24px;
+
+    &:hover {
+      color: white;
+    }
+  }
+
+  &__meta-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  &__impact {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+
+  &__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  &__time {
+    font-size: 11px;
+    color: var(--color-muted);
+  }
+
+  &__title {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.25;
+    max-width: 800px;
+    margin: 0 0 20px;
+  }
+
+  &__pill {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-muted);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  &__body {
+    padding: 48px 64px 80px;
+  }
+
+  &__content {
+    max-width: 720px;
+  }
+
+  &__summary-block {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+  }
+
+  &__summary-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-accent);
+    margin: 0 0 12px;
+  }
+
+  &__summary {
+    font-size: 15px;
+    color: var(--color-body-text);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  &__read-btn {
+    display: inline-block;
+    background: var(--color-accent);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+
+    &:hover {
+      opacity: 0.9;
+      color: white;
+    }
+  }
+}

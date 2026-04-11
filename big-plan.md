@@ -1,8 +1,8 @@
-# CLAUDE.md — AI-Reporter Project Setup Guide
+# AI-Reporter — Project Reference
 
-This document summarizes the **current project status**, **architecture decisions**, and the **remaining steps to initialize the frontend and backend environments** for the AI-Reporter project.
+This document captures the **current project state**, **architecture**, and **remaining development phases** for the AI-Reporter platform.
 
-It is intended to serve as a persistent reference when working with AI coding assistants.
+It is intended as a living reference when working with AI coding assistants.
 
 ---
 
@@ -27,504 +27,146 @@ Core capabilities:
 
 ## Frontend
 
-Framework
-
-* Angular
-
-Supporting tools
-
-* SCSS styling
-* Angular Material (UI components)
+* Angular 20 (standalone components, signals)
+* SCSS — custom design system + Bootstrap utility classes
 * RxJS for reactive data flows
-
-Responsibilities
-
-* Daily feed UI
-* Article detail pages
-* Weekly digest view
-* AI chat interface
-* Authentication UI
-* Filters and search
-
-Runs locally at:
-
-http://localhost:4200
-
----
+* Runs at: `http://localhost:4200`
 
 ## Backend
 
-Framework
-
 * NestJS (Node.js)
-
-Responsibilities
-
-* REST API
-* Authentication
-* News retrieval
-* AI service integration
-* Personalization logic
-* Pipeline orchestration
-* Chat endpoint
-
-Runs locally at:
-
-http://localhost:3000
-
----
+* Prisma ORM
+* Runs at: `http://localhost:3000`
 
 ## Database
 
-Primary database
-
-PostgreSQL
-
-ORM
-
-Prisma
-
-Future extension
-
-pgvector for embeddings and semantic similarity.
-
----
+* PostgreSQL 15 (via Docker)
+* Future: pgvector for embeddings
 
 ## Background Processing
 
-Queue system
-
-Redis + BullMQ
-
-Purpose
-
-* asynchronous pipelines
-* article ingestion
-* deduplication
-* AI summarization
-* weekly digest generation
-
----
+* Redis 7 (via Docker) + BullMQ
+* Purpose: async pipelines, ingestion, AI processing, digest generation
 
 ## AI Layer
 
-Provider
-
-OpenAI API
-
-Used for
-
-* summarization
-* article analysis
-* embeddings
-* contextual chat
-* weekly digest generation
+* OpenAI API
+* Used for: summarization, tag extraction, scoring, chat, weekly digest
 
 ---
 
 # Repository Structure
 
-The project uses a **monorepo structure**.
-
 ```
 ai-reporter/
-
-frontend/
-Angular application
-
-backend/
-NestJS API server
-
-worker/
-background pipelines (future)
-
-docker/
-local infrastructure configs
-
-docs/
-architecture notes
+  frontend/     Angular application
+  backend/      NestJS API server
+  worker/       background pipelines (future)
+  docker/       local infrastructure configs
+  docs/         architecture notes
 ```
 
 ---
 
 # Current Status
 
-Completed:
+## Completed
 
-* Angular project initialized
-* NestJS backend project initialized
+- Angular 20 frontend with signals, routing, SCSS design system
+- NestJS backend with REST API (`/api/articles`, `/api/articles/:id`)
+- Prisma ORM + PostgreSQL — `Article` model (id, title, url, summary, source, publishedAt, createdAt)
+- Docker Compose — PostgreSQL 15 + Redis 7 running locally
+- Frontend ↔ Backend connection (`ApiService` → `localhost:3000/api`)
+- Feed page UI (Figma-matched): navbar, hero, filter bar, responsive 3-col card grid
+- Article detail page UI (Figma-matched): dark hero header, AI summary block, read-original CTA
+- `TimeAgoPipe` for relative timestamps
+- DB seed script with sample articles
 
-Not yet completed:
+## Not Yet Done
 
-* frontend/backend connection
-* database setup
-* Prisma setup
-* Redis setup
-* API endpoints
-* pipelines
-* authentication
-* deployment
-
----
-
-# Local Development Environment
-
-Development requires the following tools:
-
-Node.js (LTS)
-
-Package manager
-npm
-
-Docker Desktop
-
-Git
-
-Optional but useful
-
-Postman or Insomnia for API testing.
+- News ingestion pipeline (RSS feeds → DB)
+- AI summarization (OpenAI → populate `summary` field)
+- Article scoring/ranking (`impactLevel`, `score`, `category` fields)
+- Redis/BullMQ integration (Docker is ready, code is not)
+- Authentication (JWT, user accounts)
+- AI chat interface
+- Weekly digest pipeline + view
 
 ---
 
-# Backend Initialization Steps
-
-Navigate to the backend folder.
+# Architecture
 
 ```
-cd backend
+Browser (Angular 20)
+  └── /              → HomePageHeroComponent (hero + CTA)
+  └── /feed          → FeedPageComponent → GET /api/articles
+  └── /articles/:id  → ArticleDetailComponent → GET /api/articles/:id
+
+NestJS (port 3000)
+  └── ArticlesModule
+        └── ArticlesController → ArticlesService → PrismaService → PostgreSQL
+
+Infrastructure (Docker)
+  └── PostgreSQL 15 (port 5432)
+  └── Redis 7       (port 6379) — ready, not yet wired to app
 ```
 
-Install backend dependencies.
-
-```
-npm install
-```
-
-Install configuration module.
-
-```
-npm install @nestjs/config
-```
-
-Install Prisma ORM.
-
-```
-npm install @prisma/client
-npm install prisma --save-dev
-```
-
-Initialize Prisma.
-
-```
-npx prisma init
-```
-
-This creates:
-
-```
-backend/prisma/
-backend/.env
-```
+**Frontend state:** Angular signals (no NgRx)
+**API prefix:** `/api`
+**CORS:** enabled for `localhost:4200`
 
 ---
 
-# Configure Environment Variables
-
-Edit the backend `.env` file.
-
-Example:
-
-```
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ai_reporter"
-
-OPENAI_API_KEY="your_key"
-
-NEWS_API_KEY="your_key"
-```
-
-These variables must **never be committed to Git**.
-
----
-
-# Local Database Setup
-
-Use Docker to run PostgreSQL and Redis.
-
-Create a `docker-compose.yml` in the project root.
-
-Example:
-
-```
-services:
-
-  postgres:
-    image: postgres:15
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: ai_reporter
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-
-  redis:
-    image: redis
-    ports:
-      - "6379:6379"
-```
-
-Start services:
-
-```
-docker compose up -d
-```
-
----
-
-# Database Migration
-
-Once Prisma is configured, run:
-
-```
-npx prisma migrate dev
-```
-
-This creates the initial database schema.
-
----
-
-# Running the Backend
-
-From the backend folder:
-
-```
-npm run start:dev
-```
-
-Server should start at:
-
-http://localhost:3000
-
----
-
-# Running the Frontend
-
-Navigate to the frontend folder.
-
-```
-cd frontend
-```
-
-Install dependencies.
-
-```
-npm install
-```
-
-Start Angular dev server.
-
-```
-ng serve
-```
-
-Frontend runs at:
-
-http://localhost:4200
-
----
-
-# Connecting Frontend to Backend
-
-Create an API service in Angular.
-
-Example endpoint base:
-
-```
-http://localhost:3000
-```
-
-Example API routes (future):
-
-```
-GET /articles
-GET /articles/:id
-POST /chat
-POST /auth/login
-```
-
-Angular services will call these endpoints.
-
----
-
-# Recommended Angular Structure
-
-Inside `frontend/src/app` organize code as:
-
-```
-core/
-global services and guards
-
-shared/
-reusable components and models
-
-features/
-application features
-```
-
-Example:
-
-```
-features/
-
-feed/
-article/
-weekly-digest/
-chat/
-auth/
-```
-
----
-
-# Next Development Milestones
-
-## Phase 1 — API Foundation
-
-Create backend modules:
-
-```
-news
-users
-ai
-auth
-pipeline
-```
-
-Define first endpoints:
-
-```
-GET /articles
-GET /articles/:id
-```
-
----
-
-## Phase 2 — News Ingestion Pipeline
-
-Implement:
-
-```
-Fetch RSS feeds
-Normalize content
-Extract article text
-Store in database
-```
-
-Libraries
-
-* rss-parser
-* cheerio
-* playwright (optional)
-
----
+# Development Phases
+
+## Phase 2 — News Ingestion Pipeline ← next
+
+- RSS feed fetcher (`rss-parser`)
+- Content normalizer + article storage
+- Deduplication logic
+- BullMQ queue wired to Redis
+- Libraries: `rss-parser`, `cheerio`, `playwright` (optional)
 
 ## Phase 3 — AI Processing
 
-Add AI pipeline:
+- OpenAI summarization per article
+- Tag/category extraction
+- Impact scoring
+- Store results back to DB
 
-```
-Generate summaries
-Extract tags
-Score articles
-```
+## Phase 4 — Ranking System
 
-Store processed content in the database.
+- Score-based top-N daily selection
+- Add `score`, `category`, `impactLevel` fields to Prisma schema
+- Surface impact level + category in frontend card UI
 
----
+## Phase 5 — AI Chat
 
-## Phase 4 — Frontend Feed
+- `POST /api/chat` endpoint
+- Context builder: current article + related articles
+- Frontend chat panel on article detail page
 
-Build UI components:
+## Phase 6 — Weekly Digest
 
-```
-news cards
-article page
-category filters
-```
+- Weekly BullMQ scheduled job
+- Topic clustering + AI digest generation
+- Digest view page at `/digest`
 
-Fetch data from backend API.
+## Phase 7 — Authentication
 
----
-
-## Phase 5 — Ranking System
-
-Implement scoring algorithm based on:
-
-* source credibility
-* recency
-* keyword relevance
-* impact signals
-
-Select top 20 daily stories.
-
----
-
-## Phase 6 — AI Chat
-
-Implement contextual chat system.
-
-Flow:
-
-```
-user question
-→ backend
-→ context builder
-→ LLM
-→ response
-```
-
-Context includes:
-
-* current article
-* related articles
-
----
-
-## Phase 7 — Weekly Digest
-
-Weekly pipeline:
-
-```
-collect weekly articles
-cluster topics
-generate AI digest
-```
+- JWT-based auth
+- User accounts + reading preferences
+- Protected routes
 
 ---
 
 # Future Improvements
 
-Later phases may include:
-
-* semantic search using embeddings
-* personalization engine
-* vector database
-* recommendation system
-* multi-language support
-* social media publishing automation
-
----
-
-# Development Workflow
-
-Recommended workflow:
-
-```
-develop locally
-commit changes
-push to repository
-deploy to staging
-verify behavior
-deploy to production
-```
+* Semantic search (embeddings + pgvector)
+* Personalization engine
+* Recommendation system
+* Multi-language support
+* Social media publishing automation
 
 ---
 
@@ -534,7 +176,3 @@ deploy to production
 2. Never expose API keys to the frontend.
 3. Maintain separate environments (local, staging, production).
 4. Prioritize simple MVP features before advanced AI logic.
-
----
-
-# End of Document

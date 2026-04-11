@@ -1,0 +1,38 @@
+<!-- Article detail: dark header with title/meta, white content area with summary and original link -->
+<div class="c-article-detail">
+  @if (isLoading()) {
+    <div class="c-article-detail__state">Loading article...</div>
+  } @else if (notFound()) {
+    <div class="c-article-detail__state">Article not found.</div>
+  } @else {
+    <div class="c-article-detail__hero">
+      <a class="c-article-detail__back" routerLink="/feed">&larr; Back to feed</a>
+      <div class="c-article-detail__meta-row">
+        <span class="c-article-detail__impact">
+          <span class="c-article-detail__dot"></span>High Impact
+        </span>
+        <span class="c-article-detail__time">{{ article()!.publishedAt | timeAgo }}</span>
+      </div>
+      <h1 class="c-article-detail__title">{{ article()!.title }}</h1>
+      <span class="c-article-detail__pill">{{ article()!.source }}</span>
+    </div>
+
+    <div class="c-article-detail__body">
+      <div class="c-article-detail__content">
+        @if (article()!.summary) {
+          <div class="c-article-detail__summary-block">
+            <p class="c-article-detail__summary-label">AI Summary</p>
+            <p class="c-article-detail__summary">{{ article()!.summary }}</p>
+          </div>
+        }
+        <a
+          [href]="article()!.url"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="c-article-detail__read-btn">
+          Read original article &rarr;
+        </a>
+      </div>
+    </div>
+  }
+</div>

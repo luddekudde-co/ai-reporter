@@ -1,0 +1,20 @@
+<a class="c-article-card" [routerLink]="['/articles', article().id]">
+  <div class="c-article-card__top-row">
+    <div class="c-article-card__impact">
+      <span class="c-article-card__dot"></span>
+      <span class="c-article-card__impact-label">High Impact</span>
+    </div>
+    <span class="c-article-card__time">{{ article().publishedAt | timeAgo }}</span>
+  </div>
+
+  <h3 class="c-article-card__title">{{ article().title }}</h3>
+  <p class="c-article-card__summary">{{ article().summary }}</p>
+
+  <div class="c-article-card__footer">
+    <div class="c-article-card__divider"></div>
+    <div class="c-article-card__footer-row">
+      <span class="c-article-card__pill">{{ article().source }}</span>
+      <span class="c-article-card__read-more">Read more &rarr;</span>
+    </div>
+  </div>
+</a>
