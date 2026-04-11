@@ -1,15 +1,19 @@
 <!-- Feed page: dark hero, category filter bar, and paginated article card grid -->
+<div class="c-navbar-padding"></div>
 <div class="c-feed-page">
   <div class="c-feed-page__hero">
     <p class="c-feed-page__hero-meta">Today's Top AI Stories</p>
     <h1 class="c-feed-page__hero-title">Today's AI Intelligence Brief</h1>
     <p class="c-feed-page__hero-subtitle">
-      Curated daily from the most trusted sources in AI — ranked by impact, relevance, and credibility.
+      Curated daily from the most trusted sources in AI — ranked by impact,
+      relevance, and credibility.
     </p>
   </div>
 
   <div class="c-feed-page__filter-bar">
-    <span class="c-feed-page__filter-item c-feed-page__filter-item--is-active">All</span>
+    <span class="c-feed-page__filter-item c-feed-page__filter-item--is-active"
+      >All</span
+    >
   </div>
 
   <div class="c-feed-page__content">
@@ -31,14 +35,18 @@
           <button
             class="btn btn-outline-secondary btn-sm me-2"
             [disabled]="currentPage() === 1"
-            (click)="loadArticles(currentPage() - 1)">
+            (click)="loadArticles(currentPage() - 1)"
+          >
             Previous
           </button>
-          <span class="c-feed-page__page-info">{{ currentPage() }} / {{ totalPages }}</span>
+          <span class="c-feed-page__page-info"
+            >{{ currentPage() }} / {{ totalPages }}</span
+          >
           <button
             class="btn btn-outline-secondary btn-sm ms-2"
             [disabled]="currentPage() === totalPages"
-            (click)="loadArticles(currentPage() + 1)">
+            (click)="loadArticles(currentPage() + 1)"
+          >
             Next
           </button>
         </nav>

@@ -74,20 +74,28 @@ ai-reporter/
 
 - Angular 20 frontend with signals, routing, SCSS design system
 - NestJS backend with REST API (`/api/articles`, `/api/articles/:id`)
-- Prisma ORM + PostgreSQL — `Article` model (id, title, url, summary, source, publishedAt, createdAt)
+- Prisma ORM + PostgreSQL — `Article` model with `category`, `impactLevel`, `aiProcessed` fields
 - Docker Compose — PostgreSQL 15 + Redis 7 running locally
 - Frontend ↔ Backend connection (`ApiService` → `localhost:3000/api`)
 - Feed page UI (Figma-matched): navbar, hero, filter bar, responsive 3-col card grid
 - Article detail page UI (Figma-matched): dark hero header, AI summary block, read-original CTA
 - `TimeAgoPipe` for relative timestamps
 - DB seed script with sample articles
+- **Phase 2 — RSS Ingestion Pipeline**
+  - `IngestionService`: fetches 5 AI news feeds (TechCrunch, VentureBeat, The Verge, MIT Tech Review, OpenAI)
+  - Hourly cron job (`@Cron(EVERY_HOUR)`) + manual `POST /api/ingestion/run`
+  - Deduplication via Prisma `upsert` on unique `url` field
+  - Backlog recovery via `POST /api/ingestion/process-backlog?limit=N`
+- **Phase 3 — AI Processing**
+  - `AiProcessingService`: calls OpenAI `gpt-4o-mini` to generate summary, category, and impact level per article
+  - BullMQ queue (`article-processing`) wired to Redis for async job processing
+  - `aiProcessed` flag prevents double-processing; backlog endpoint re-queues failed articles
+  - Try/catch with re-throw so BullMQ retries failed jobs and errors are clearly logged
+  - Frontend article card and detail page display real AI-generated impact level and category
 
 ## Not Yet Done
 
-- News ingestion pipeline (RSS feeds → DB)
-- AI summarization (OpenAI → populate `summary` field)
-- Article scoring/ranking (`impactLevel`, `score`, `category` fields)
-- Redis/BullMQ integration (Docker is ready, code is not)
+- Article scoring/ranking (numeric `score` field for top-N daily selection)
 - Authentication (JWT, user accounts)
 - AI chat interface
 - Weekly digest pipeline + view
@@ -105,10 +113,14 @@ Browser (Angular 20)
 NestJS (port 3000)
   └── ArticlesModule
         └── ArticlesController → ArticlesService → PrismaService → PostgreSQL
+  └── IngestionModule
+        └── IngestionController → IngestionService → rss-parser → upsert → BullMQ
+  └── AiProcessingModule
+        └── AiProcessingProcessor (BullMQ worker) → AiProcessingService → OpenAI → PrismaService
 
 Infrastructure (Docker)
   └── PostgreSQL 15 (port 5432)
-  └── Redis 7       (port 6379) — ready, not yet wired to app
+  └── Redis 7       (port 6379) — backing BullMQ article-processing queue
 ```
 
 **Frontend state:** Angular signals (no NgRx)
@@ -119,26 +131,25 @@ Infrastructure (Docker)
 
 # Development Phases
 
-## Phase 2 — News Ingestion Pipeline ← next
+## Phase 2 — News Ingestion Pipeline ✅ Done
 
-- RSS feed fetcher (`rss-parser`)
-- Content normalizer + article storage
-- Deduplication logic
+- RSS feed fetcher (`rss-parser`) — 5 AI feeds
+- Deduplication via Prisma upsert on `url`
+- Hourly cron + manual trigger endpoint
 - BullMQ queue wired to Redis
-- Libraries: `rss-parser`, `cheerio`, `playwright` (optional)
 
-## Phase 3 — AI Processing
+## Phase 3 — AI Processing ✅ Done
 
-- OpenAI summarization per article
-- Tag/category extraction
-- Impact scoring
-- Store results back to DB
+- OpenAI `gpt-4o-mini` summarization, category, impact level per article
+- BullMQ async processing with retry and error logging
+- `aiProcessed` flag + backlog recovery endpoint
+- Frontend displays real AI-generated data
 
-## Phase 4 — Ranking System
+## Phase 4 — Ranking System ← next
 
-- Score-based top-N daily selection
-- Add `score`, `category`, `impactLevel` fields to Prisma schema
-- Surface impact level + category in frontend card UI
+- Add numeric `score` field to Prisma schema
+- Score-based top-N daily selection (surface "top stories" separately from full feed)
+- `category` and `impactLevel` already in DB and frontend — extend filtering/sorting in feed UI
 
 ## Phase 5 — AI Chat
 
