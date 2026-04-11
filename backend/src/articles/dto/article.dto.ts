@@ -6,6 +6,8 @@ export class ArticleDto {
   source: string;
   publishedAt: Date;
   createdAt: Date;
+  category: string | null;
+  impactLevel: 'LOW' | 'MEDIUM' | 'HIGH' | null;
 }
 
 export class ArticlesResponseDto {

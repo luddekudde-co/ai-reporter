@@ -7,12 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ImpactLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 model Article {
-  id          Int      @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   title       String
-  url         String   @unique
+  url         String       @unique
   summary     String?
   source      String
   publishedAt DateTime
-  createdAt   DateTime @default(now())
+  createdAt   DateTime     @default(now())
+  category    String?
+  impactLevel ImpactLevel?
+  aiProcessed Boolean      @default(false)
 }

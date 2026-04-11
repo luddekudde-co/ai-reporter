@@ -10,6 +10,8 @@ export interface Article {
   source: string;
   publishedAt: string;
   createdAt: string;
+  category: string | null;
+  impactLevel: 'LOW' | 'MEDIUM' | 'HIGH' | null;
 }
 
 export interface ArticlesResponse {

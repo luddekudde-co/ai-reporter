@@ -9,8 +9,11 @@
       <a class="c-article-detail__back" routerLink="/feed">&larr; Back to feed</a>
       <div class="c-article-detail__meta-row">
         <span class="c-article-detail__impact">
-          <span class="c-article-detail__dot"></span>High Impact
+          <span class="c-article-detail__dot"></span>{{ impactLabel() }}
         </span>
+        @if (article()!.category) {
+          <span class="c-article-detail__category">{{ article()!.category }}</span>
+        }
         <span class="c-article-detail__time">{{ article()!.publishedAt | timeAgo }}</span>
       </div>
       <h1 class="c-article-detail__title">{{ article()!.title }}</h1>

@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Article } from '../../core/services/articles.service';
 import { TimeAgoPipe } from '../../core/pipes/time-ago.pipe';
@@ -12,4 +12,11 @@ import { TimeAgoPipe } from '../../core/pipes/time-ago.pipe';
 })
 export class ArticleCardComponent {
   article = input.required<Article>();
+
+  impactLabel = computed(() => {
+    const level = this.article().impactLevel;
+    if (!level) return 'Unrated';
+    const word = level.charAt(0) + level.slice(1).toLowerCase();
+    return `${word} Impact`;
+  });
 }
