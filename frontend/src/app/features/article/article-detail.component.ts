@@ -3,14 +3,14 @@
  * Fetches article by ID from the route params and displays title, source, date, summary, and original URL.
  */
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticlesService, Article } from '../../core/services/articles.service';
-import { TimeAgoPipe } from '../../core/pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-article-detail',
   standalone: true,
-  imports: [RouterLink, TimeAgoPipe],
+  imports: [RouterLink, DatePipe],
   templateUrl: './article-detail.component.html',
   styleUrl: './article-detail.component.scss',
 })
@@ -27,6 +27,14 @@ export class ArticleDetailComponent implements OnInit {
     if (!level) return 'Unrated';
     const word = level.charAt(0) + level.slice(1).toLowerCase();
     return `${word} Impact`;
+  });
+
+  sourceHostname = computed(() => {
+    try {
+      return new URL(this.article()!.url).hostname;
+    } catch {
+      return this.article()!.url;
+    }
   });
 
   ngOnInit(): void {

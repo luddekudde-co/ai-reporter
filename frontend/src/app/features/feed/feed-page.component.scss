@@ -1,13 +1,7 @@
-.c-navbar-padding {
-  height: 40px;
-  width: 100%;
-  background: var(--color-dark);
-}
-
 .c-feed-page {
   &__hero {
     background: var(--color-dark);
-    padding: 36px 64px 48px;
+    padding: 76px 64px 48px;
   }
 
   &__hero-meta {
@@ -55,7 +49,7 @@
       font-weight: 600;
 
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: 0;
         left: 0;

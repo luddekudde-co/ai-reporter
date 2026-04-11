@@ -1,4 +1,4 @@
-<!-- Article detail: dark header with title/meta, white content area with summary and original link -->
+<!-- Article detail: dark hero header with breadcrumb/pills/title, light body with source bar + two-column layout -->
 <div class="c-article-detail">
   @if (isLoading()) {
     <div class="c-article-detail__state">Loading article...</div>
@@ -6,35 +6,79 @@
     <div class="c-article-detail__state">Article not found.</div>
   } @else {
     <div class="c-article-detail__hero">
-      <a class="c-article-detail__back" routerLink="/feed">&larr; Back to feed</a>
-      <div class="c-article-detail__meta-row">
-        <span class="c-article-detail__impact">
-          <span class="c-article-detail__dot"></span>{{ impactLabel() }}
-        </span>
-        @if (article()!.category) {
-          <span class="c-article-detail__category">{{ article()!.category }}</span>
-        }
-        <span class="c-article-detail__time">{{ article()!.publishedAt | timeAgo }}</span>
+      <div class="c-article-detail__hero-inner">
+        <a class="c-article-detail__back" routerLink="/feed"
+          >&larr; Back to Feed</a
+        >
+        <nav class="c-article-detail__breadcrumb">
+          Feed / {{ article()!.category ?? "General" }} / Article
+        </nav>
+        <div class="c-article-detail__pills">
+          @if (article()!.category) {
+            <span class="c-article-detail__pill--category">{{
+              article()!.category
+            }}</span>
+          }
+          <span class="c-article-detail__pill--impact">{{
+            impactLabel()
+          }}</span>
+        </div>
+        <h1 class="c-article-detail__title">{{ article()!.title }}</h1>
+        <p class="c-article-detail__byline">
+          {{ article()!.source }} &middot;
+          {{ article()!.publishedAt | date: "MMMM d, yyyy" }}
+        </p>
       </div>
-      <h1 class="c-article-detail__title">{{ article()!.title }}</h1>
-      <span class="c-article-detail__pill">{{ article()!.source }}</span>
     </div>
 
     <div class="c-article-detail__body">
-      <div class="c-article-detail__content">
-        @if (article()!.summary) {
-          <div class="c-article-detail__summary-block">
-            <p class="c-article-detail__summary-label">AI Summary</p>
-            <p class="c-article-detail__summary">{{ article()!.summary }}</p>
+      <div class="c-article-detail__body-inner">
+        <div class="c-article-detail__source-bar">
+          <span>Source: {{ sourceHostname() }}</span>
+          <a
+            [href]="article()!.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="c-article-detail__source-link"
+          >
+            View original &rarr;
+          </a>
+        </div>
+
+        <div class="c-article-detail__columns">
+          <div class="c-article-detail__main">
+            @if (article()!.summary) {
+              <div class="c-article-detail__summary-card">
+                <h2 class="c-article-detail__summary-heading">Summary</h2>
+                <hr class="c-article-detail__summary-divider" />
+                <p class="c-article-detail__summary-text">
+                  {{ article()!.summary }}
+                </p>
+                <a
+                  [href]="article()!.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="c-article-detail__deep-dive"
+                >
+                  Deep Dive with AI &rarr;
+                </a>
+              </div>
+            }
           </div>
-        }
-        <a
-          [href]="article()!.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="c-article-detail__read-btn">
-          Read original article &rarr;
-        </a>
+
+          <div class="c-article-detail__sidebar">
+            @if (article()!.category) {
+              <div class="c-article-detail__tags-card">
+                <h3 class="c-article-detail__tags-heading">Tags</h3>
+                <div class="c-article-detail__tags">
+                  <span class="c-article-detail__tag">{{
+                    article()!.category
+                  }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
       </div>
     </div>
   }
