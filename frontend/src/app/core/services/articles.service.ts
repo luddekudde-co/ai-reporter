@@ -25,8 +25,14 @@ export interface ArticlesResponse {
 export class ArticlesService {
   constructor(private readonly api: ApiService) {}
 
-  getArticles(page = 1, limit = 20): Observable<ArticlesResponse> {
-    return this.api.get<ArticlesResponse>('articles', { page, limit });
+  getArticles(
+    page = 1,
+    limit = 20,
+    category?: string,
+  ): Observable<ArticlesResponse> {
+    const params: Record<string, string | number> = { page, limit };
+    if (category) params['category'] = category;
+    return this.api.get<ArticlesResponse>('articles', params);
   }
 
   getArticle(id: number): Observable<Article> {

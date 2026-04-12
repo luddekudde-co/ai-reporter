@@ -31,7 +31,7 @@ export class IngestionService {
   ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
-  async fetchAllFeeds(): Promise<IngestionResult> {
+  async fetchAllFeeds(limit?: number): Promise<IngestionResult> {
     this.logger.log('Starting RSS ingestion run');
 
     const result: IngestionResult = {
@@ -44,7 +44,7 @@ export class IngestionService {
 
     for (const feed of RSS_FEEDS) {
       try {
-        const stats = await this.processFeed(feed);
+        const stats = await this.processFeed(feed, limit);
         result.fetched += stats.fetched;
         result.created += stats.created;
         result.skipped += stats.skipped;
@@ -78,14 +78,18 @@ export class IngestionService {
     return { queued: unprocessed.length };
   }
 
-  private async processFeed(feed: FeedConfig): Promise<{
+  private async processFeed(
+    feed: FeedConfig,
+    limit?: number,
+  ): Promise<{
     fetched: number;
     created: number;
     skipped: number;
     queued: number;
   }> {
     const parsed = await this.parser.parseURL(feed.url);
-    const items = parsed.items ?? [];
+    const allItems = parsed.items ?? [];
+    const items = limit ? allItems.slice(0, limit) : allItems;
 
     let created = 0;
     let skipped = 0;

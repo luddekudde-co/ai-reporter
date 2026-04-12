@@ -9,8 +9,9 @@ export class ArticlesController {
   findAll(
     @Query('page', new ParseIntPipe({ optional: true })) page = 1,
     @Query('limit', new ParseIntPipe({ optional: true })) limit = 20,
+    @Query('category') category?: string,
   ) {
-    return this.articlesService.findAll(page, limit);
+    return this.articlesService.findAll(page, limit, category);
   }
 
   @Get(':id')

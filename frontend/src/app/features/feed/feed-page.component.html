@@ -1,7 +1,6 @@
 <!-- Feed page: dark hero, category filter bar, and paginated article card grid -->
 <div class="c-feed-page">
   <div class="c-feed-page__hero">
-    <p class="c-feed-page__hero-meta">Today's Top AI Stories</p>
     <h1 class="c-feed-page__hero-title">Today's AI Intelligence Brief</h1>
     <p class="c-feed-page__hero-subtitle">
       Curated daily from the most trusted sources in AI — ranked by impact,
@@ -9,11 +8,7 @@
     </p>
   </div>
 
-  <div class="c-feed-page__filter-bar">
-    <span class="c-feed-page__filter-item c-feed-page__filter-item--is-active"
-      >All</span
-    >
-  </div>
+  <app-nav-menu [navItems]="navigationItems" />
 
   <div class="c-feed-page__content">
     <p class="c-feed-page__section-label">Today's Top Stories</p>
@@ -34,7 +29,7 @@
           <button
             class="btn btn-outline-secondary btn-sm me-2"
             [disabled]="currentPage() === 1"
-            (click)="loadArticles(currentPage() - 1)"
+            (click)="goToPage(currentPage() - 1)"
           >
             Previous
           </button>
@@ -44,7 +39,7 @@
           <button
             class="btn btn-outline-secondary btn-sm ms-2"
             [disabled]="currentPage() === totalPages"
-            (click)="loadArticles(currentPage() + 1)"
+            (click)="goToPage(currentPage() + 1)"
           >
             Next
           </button>

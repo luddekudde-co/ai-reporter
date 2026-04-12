@@ -7,13 +7,17 @@ export class IngestionController {
 
   @Post('run')
   @HttpCode(HttpStatus.OK)
-  run(): Promise<IngestionResult> {
-    return this.ingestionService.fetchAllFeeds();
+  run(@Query('limit') limit?: string): Promise<IngestionResult> {
+    return this.ingestionService.fetchAllFeeds(
+      limit ? Number(limit) : undefined,
+    );
   }
 
   @Post('process-backlog')
   @HttpCode(HttpStatus.OK)
   processBacklog(@Query('limit') limit?: string): Promise<{ queued: number }> {
-    return this.ingestionService.processBacklog(limit ? Number(limit) : undefined);
+    return this.ingestionService.processBacklog(
+      limit ? Number(limit) : undefined,
+    );
   }
 }
