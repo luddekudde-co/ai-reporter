@@ -1,10 +1,12 @@
 <a class="c-article-card" [routerLink]="['/articles', article().id]">
   <div class="c-article-card__top-row">
-    <div class="c-article-card__impact">
+    <div class="c-article-card__impact" [ngClass]="impactClass()">
       <span class="c-article-card__dot"></span>
       <span class="c-article-card__impact-label">{{ impactLabel() }}</span>
     </div>
-    <span class="c-article-card__time">{{ article().publishedAt | timeAgo }}</span>
+    <span class="c-article-card__time">{{
+      article().publishedAt | timeAgo
+    }}</span>
   </div>
 
   <h3 class="c-article-card__title">{{ article().title }}</h3>

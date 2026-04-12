@@ -14,14 +14,32 @@ enum ImpactLevel {
 }
 
 model Article {
-  id          Int          @id @default(autoincrement())
-  title       String
-  url         String       @unique
-  summary     String?
-  source      String
-  publishedAt DateTime
-  createdAt   DateTime     @default(now())
-  category    String?
-  impactLevel ImpactLevel?
-  aiProcessed Boolean      @default(false)
+  id             Int             @id @default(autoincrement())
+  title          String
+  url            String          @unique
+  summary        String?
+  source         String
+  publishedAt    DateTime
+  createdAt      DateTime        @default(now())
+  category       String?
+  impactLevel    ImpactLevel?
+  aiProcessed    Boolean         @default(false)
+  digestArticles DigestArticle[]
+}
+
+model Digest {
+  id            Int             @id @default(autoincrement())
+  weekStartDate DateTime        @unique
+  weekSummary   String
+  articles      DigestArticle[]
+  createdAt     DateTime        @default(now())
+}
+
+model DigestArticle {
+  id        Int     @id @default(autoincrement())
+  digest    Digest  @relation(fields: [digestId], references: [id])
+  digestId  Int
+  article   Article @relation(fields: [articleId], references: [id])
+  articleId Int
+  rank      Int
 }

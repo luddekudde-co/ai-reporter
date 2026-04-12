@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ArticlesModule } from './articles/articles.module';
 import { IngestionModule } from './ingestion/ingestion.module';
 import { AiProcessingModule } from './ai-processing/ai-processing.module';
+import { DigestModule } from './digest/digest.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AiProcessingModule } from './ai-processing/ai-processing.module';
     ArticlesModule,
     IngestionModule,
     AiProcessingModule,
+    DigestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

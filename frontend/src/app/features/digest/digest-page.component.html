@@ -1,0 +1,67 @@
+<div class="c-digest-page">
+  <!-- Hero header -->
+  <div class="c-digest-page__hero">
+    <h1 class="c-digest-page__hero-title">Recent AI News digest</h1>
+  </div>
+
+  <!-- Content -->
+  <div class="c-digest-page__content">
+    @if (isLoading()) {
+      <div class="c-digest-page__state">Loading digest...</div>
+    } @else if (error()) {
+      <div class="c-digest-page__state">{{ error() }}</div>
+    } @else if (digest(); as d) {
+      <!-- AI-generated week summary -->
+      <div class="c-digest-page__summary">
+        <p class="c-digest-page__summary-label">Editor's Summary</p>
+        <p class="c-digest-page__summary-text">{{ d.weekSummary }}</p>
+      </div>
+
+      <!-- Ranked article list -->
+      <div class="d-flex py-4">
+        <p class="c-digest-page__section-label">Top Stories This Week</p>
+        <span class="c-divider"></span>
+      </div>
+
+      <ol class="c-digest-page__article-list">
+        @for (item of d.articles; track item.id) {
+          <li class="c-digest-page__article-row">
+            <span class="c-digest-page__rank">{{ item.rank }}</span>
+            <div class="c-digest-page__article-body">
+              <a
+                class="c-digest-page__article-title"
+                [routerLink]="['/articles', item.article.id]"
+                >{{ item.article.title }}</a
+              >
+              <div class="c-digest-page__article-meta">
+                <span class="c-digest-page__source">{{
+                  item.article.source
+                }}</span>
+                <span
+                  class="c-digest-page__impact"
+                  [ngClass]="impactClass(item.article.impactLevel)"
+                  >{{ impactLabel(item.article.impactLevel) }}</span
+                >
+                @if (item.article.publishedAt) {
+                  <span class="c-digest-page__date">{{
+                    item.article.publishedAt | date: "MMM d"
+                  }}</span>
+                }
+              </div>
+              @if (item.article.summary) {
+                <p class="c-digest-page__article-summary">
+                  {{ item.article.summary }}
+                </p>
+              }
+            </div>
+            <a
+              class="c-digest-page__read-link"
+              [routerLink]="['/articles', item.article.id]"
+              >Read →</a
+            >
+          </li>
+        }
+      </ol>
+    }
+  </div>
+</div>

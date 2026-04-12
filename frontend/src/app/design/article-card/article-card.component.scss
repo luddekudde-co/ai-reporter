@@ -1,6 +1,6 @@
 :host {
   width: 30%;
-  min-width: 200px;;
+  min-width: 200px;
 }
 
 .c-article-card {
@@ -36,14 +36,39 @@
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: var(--color-accent);
     flex-shrink: 0;
   }
 
   &__impact-label {
     font-size: 14px;
     font-weight: 500;
-    color: var(--color-accent);
+  }
+
+  &__impact--high {
+    .c-article-card__dot {
+      background: var(--color-accent);
+    }
+    .c-article-card__impact-label {
+      color: var(--color-accent);
+    }
+  }
+
+  &__impact--medium {
+    .c-article-card__dot {
+      background: var(--color-body-text);
+    }
+    .c-article-card__impact-label {
+      color: var(--color-body-text);
+    }
+  }
+
+  &__impact--low {
+    .c-article-card__dot {
+      background: var(--color-muted);
+    }
+    .c-article-card__impact-label {
+      color: var(--color-muted);
+    }
   }
 
   &__time {
