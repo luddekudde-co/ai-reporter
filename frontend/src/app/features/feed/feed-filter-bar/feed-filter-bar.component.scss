@@ -1,0 +1,44 @@
+.c-feed-filter-bar {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  background: white;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 64px;
+  z-index: 50;
+  padding: 0 20px;
+  gap: 20px;
+
+  &__nav {
+    flex: 1;
+  }
+
+  &__sort {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  &__sort-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--color-body-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--color-accent);
+    }
+
+    &--is-active {
+      font-weight: 600;
+      color: var(--color-accent);
+    }
+  }
+}

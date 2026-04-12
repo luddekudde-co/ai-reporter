@@ -1,0 +1,21 @@
+<div class="c-feed-filter-bar">
+  <div class="c-feed-filter-bar__nav">
+    <app-nav-menu [navItems]="navItems()" />
+  </div>
+
+  <div class="c-feed-filter-bar__sort">
+    <app-dropdown #dd [label]="activeSortLabel()">
+      @for (option of sortOptions; track option.value) {
+        <button
+          class="c-feed-filter-bar__sort-item"
+          [class.c-feed-filter-bar__sort-item--is-active]="
+            activeSort() === option.value
+          "
+          (click)="selectSort(option.value, dd)"
+        >
+          {{ option.label }}
+        </button>
+      }
+    </app-dropdown>
+  </div>
+</div>

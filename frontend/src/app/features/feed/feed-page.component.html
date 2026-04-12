@@ -1,0 +1,61 @@
+<!-- Feed page: dark hero, category filter bar, and paginated article card grid -->
+<div class="c-feed-page">
+  <div class="c-feed-page__hero">
+    <h1 class="c-feed-page__hero-title">Today's AI Intelligence Brief</h1>
+    <p class="c-feed-page__hero-subtitle">
+      Curated daily from the most trusted sources in AI — ranked by impact,
+      relevance, and credibility.
+    </p>
+  </div>
+
+  <app-feed-filter-bar [navItems]="navigationItems" />
+
+  <div class="c-feed-page__content">
+    @if (articles().length > 0) {
+      <p class="c-feed-page__section-label">Top stories</p>
+    }
+    @if (isLoading()) {
+      <div class="c-feed-page__state">Loading stories...</div>
+    } @else if (articles().length === 0) {
+      <div class="c-feed-page__state">No articles found.</div>
+    } @else {
+      <div class="c-feed-page__articles">
+        @for (article of articles(); track article.id) {
+          <app-article-card [article]="article" />
+        }
+      </div>
+
+      @if (totalPages > 1) {
+        <nav class="c-feed-page__pagination">
+          <button
+            class="btn btn-outline-secondary btn-sm me-2"
+            [disabled]="currentPage() === 1"
+            (click)="goToPage(currentPage() - 1)"
+          >
+            Previous
+          </button>
+          <!--  <span class="c-feed-page__page-info"
+            >{{ currentPage() }} / {{ totalPages }}</span
+          > -->
+          <input
+            type="number"
+            class="c-feed-page__page-input"
+            [value]="currentPage()"
+            [min]="1"
+            [max]="totalPages"
+            (blur)="goToPageFromInput($event)"
+            (keydown.enter)="goToPageFromInput($event)"
+          />
+          <span class="c-feed-page__page-info">/ {{ totalPages }}</span>
+          <button
+            class="btn btn-outline-secondary btn-sm ms-2"
+            [disabled]="currentPage() === totalPages"
+            (click)="goToPage(currentPage() + 1)"
+          >
+            Next
+          </button>
+        </nav>
+      }
+    }
+  </div>
+</div>

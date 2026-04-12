@@ -64,7 +64,8 @@
               "buildTarget": "ai-reporter:build:production"
             },
             "development": {
-              "buildTarget": "ai-reporter:build:development"
+              "buildTarget": "ai-reporter:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

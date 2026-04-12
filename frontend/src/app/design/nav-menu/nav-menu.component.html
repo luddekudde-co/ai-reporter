@@ -1,0 +1,26 @@
+@if (layout.smBreakpoint()) {
+  <app-dropdown #dd [label]="activeLabel()">
+    @for (navItem of navItems(); track navItem.categoryKey) {
+      <a
+        class="c-nav-menu__dropdown-item"
+        [class.c-nav-menu__dropdown-item--is-active]="isActive(navItem)"
+        [routerLink]="[]"
+        [queryParams]="{ category: navItem.categoryKey }"
+        (click)="dd.close()"
+        >{{ navItem.label }}</a
+      >
+    }
+  </app-dropdown>
+} @else {
+  <div class="c-nav-menu">
+    @for (navItem of navItems(); track navItem.categoryKey) {
+      <a
+        class="c-nav-menu__filter-item"
+        [class.c-nav-menu__filter-item--is-active]="isActive(navItem)"
+        [routerLink]="[]"
+        [queryParams]="{ category: navItem.categoryKey }"
+        >{{ navItem.label }}</a
+      >
+    }
+  </div>
+}

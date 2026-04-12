@@ -1,0 +1,14 @@
+<div class="c-dropdown">
+  <button class="c-dropdown__trigger" (click)="toggle()">
+    <span class="c-dropdown__label">{{ label() }}</span>
+    <span
+      class="c-dropdown__chevron"
+      [class.c-dropdown__chevron--is-open]="isOpen()"
+    ></span>
+  </button>
+  @if (isOpen()) {
+    <div class="c-dropdown__list">
+      <ng-content />
+    </div>
+  }
+</div>
