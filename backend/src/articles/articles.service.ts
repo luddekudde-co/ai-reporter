@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ArticleDto, ArticlesResponseDto } from './dto/article.dto';
 
@@ -10,20 +11,45 @@ export class ArticlesService {
     page: number,
     limit: number,
     category?: string,
+    sort = 'newest',
   ): Promise<ArticlesResponseDto> {
     const skip = (page - 1) * limit;
     const where = category
       ? { category: { contains: category, mode: 'insensitive' as const } }
       : {};
-    const [data, total] = await Promise.all([
-      this.prisma.article.findMany({
+
+    const total = await this.prisma.article.count({ where });
+
+    let data: ArticleDto[];
+
+    if (sort === 'impact') {
+      const categoryClause = category
+        ? Prisma.sql`WHERE category ILIKE ${`%${category}%`}`
+        : Prisma.empty;
+
+      data = await this.prisma.$queryRaw<ArticleDto[]>`
+        SELECT id, title, url, summary, source, "publishedAt", "createdAt", category, "impactLevel"
+        FROM "Article"
+        ${categoryClause}
+        ORDER BY
+          CASE "impactLevel"
+            WHEN 'HIGH'   THEN 1
+            WHEN 'MEDIUM' THEN 2
+            WHEN 'LOW'    THEN 3
+            ELSE               4
+          END ASC,
+          "publishedAt" DESC
+        LIMIT ${limit} OFFSET ${skip}
+      `;
+    } else {
+      data = await this.prisma.article.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { publishedAt: 'desc' },
-      }),
-      this.prisma.article.count({ where }),
-    ]);
+        orderBy: { publishedAt: sort === 'oldest' ? 'asc' : 'desc' },
+      });
+    }
+
     return { data, total, page, limit };
   }
 

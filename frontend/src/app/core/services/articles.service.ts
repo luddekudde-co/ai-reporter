@@ -29,9 +29,11 @@ export class ArticlesService {
     page = 1,
     limit = 20,
     category?: string,
+    sort = 'newest',
   ): Observable<ArticlesResponse> {
     const params: Record<string, string | number> = { page, limit };
     if (category) params['category'] = category;
+    if (sort !== 'newest') params['sort'] = sort;
     return this.api.get<ArticlesResponse>('articles', params);
   }
 

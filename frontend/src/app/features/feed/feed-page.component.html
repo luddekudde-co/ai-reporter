@@ -8,11 +8,12 @@
     </p>
   </div>
 
-  <app-nav-menu [navItems]="navigationItems" />
+  <app-feed-filter-bar [navItems]="navigationItems" />
 
   <div class="c-feed-page__content">
-    <p class="c-feed-page__section-label">Today's Top Stories</p>
-
+    @if (articles().length > 0) {
+      <p class="c-feed-page__section-label">Top stories</p>
+    }
     @if (isLoading()) {
       <div class="c-feed-page__state">Loading stories...</div>
     } @else if (articles().length === 0) {
@@ -33,9 +34,19 @@
           >
             Previous
           </button>
-          <span class="c-feed-page__page-info"
+          <!--  <span class="c-feed-page__page-info"
             >{{ currentPage() }} / {{ totalPages }}</span
-          >
+          > -->
+          <input
+            type="number"
+            class="c-feed-page__page-input"
+            [value]="currentPage()"
+            [min]="1"
+            [max]="totalPages"
+            (blur)="goToPageFromInput($event)"
+            (keydown.enter)="goToPageFromInput($event)"
+          />
+          <span class="c-feed-page__page-info">/ {{ totalPages }}</span>
           <button
             class="btn btn-outline-secondary btn-sm ms-2"
             [disabled]="currentPage() === totalPages"

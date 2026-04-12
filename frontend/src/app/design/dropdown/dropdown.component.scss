@@ -1,7 +1,5 @@
 .c-dropdown {
   background: white;
-  border-bottom: 1px solid var(--color-border);
-  padding: 0 24px;
   display: flex;
   align-items: center;
   height: 52px;
@@ -44,9 +42,8 @@
 
   &__list {
     position: absolute;
-    top: calc(100% + 4px);
-    left: 24px;
-    right: 24px;
+    top: calc(100% + 2px);
+    width: 100%;
     background: white;
     border: 1px solid var(--color-border);
     border-radius: 8px;
