@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'ai-reporter-production.up.railway.app',
+  apiUrl: 'https://ai-reporter-production.up.railway.app/api',
 };
