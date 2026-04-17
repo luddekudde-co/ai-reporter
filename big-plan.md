@@ -92,12 +92,16 @@ ai-reporter/
   - `aiProcessed` flag prevents double-processing; backlog endpoint re-queues failed articles
   - Try/catch with re-throw so BullMQ retries failed jobs and errors are clearly logged
   - Frontend article card and detail page display real AI-generated impact level and category
+- **Phase 4 — Ranking System**
+  - `score` field added to Prisma schema and `ArticleDto`
+  - Score (0–100) written to article during AI processing with time-decay formula
+  - `ArticlesService` supports score-based sort
+  - Feed UI defaults to score ranking; "Top Stories" sort option added
 
 ## Not Yet Done
 
-- Article scoring/ranking (numeric `score` field for top-N daily selection)
+- AI chat interface (`POST /api/chat` + chat panel on article detail)
 - Authentication (JWT, user accounts)
-- AI chat interface
 - Weekly digest pipeline + view
 
 ---
@@ -145,13 +149,14 @@ Infrastructure (Docker)
 - `aiProcessed` flag + backlog recovery endpoint
 - Frontend displays real AI-generated data
 
-## Phase 4 — Ranking System ← next
+## Phase 4 — Ranking System ✅ Done
 
-- Add numeric `score` field to Prisma schema
-- Score-based top-N daily selection (surface "top stories" separately from full feed)
-- `category` and `impactLevel` already in DB and frontend — extend filtering/sorting in feed UI
+- `score` field (0–100, float) added to Prisma schema + `ArticleDto`
+- Score written during AI processing with time-decay formula
+- `ArticlesService` score-based sort; feed defaults to score ranking
+- "Top Stories" sort option in feed UI
 
-## Phase 5 — AI Chat
+## Phase 5 — AI Chat ← next
 
 - `POST /api/chat` endpoint
 - Context builder: current article + related articles
