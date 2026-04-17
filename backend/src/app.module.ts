@@ -10,11 +10,19 @@ import { IngestionModule } from './ingestion/ingestion.module';
 import { AiProcessingModule } from './ai-processing/ai-processing.module';
 import { DigestModule } from './digest/digest.module';
 
+function redisConnection() {
+  const url = process.env.REDIS_URL;
+  if (url) {
+    return { url };
+  }
+  return { host: 'localhost', port: 6379 };
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
-    BullModule.forRoot({ connection: { host: 'localhost', port: 6379 } }),
+    BullModule.forRoot({ connection: redisConnection() }),
     PrismaModule,
     ArticlesModule,
     IngestionModule,
