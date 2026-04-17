@@ -12,6 +12,7 @@ export interface Article {
   createdAt: string;
   category: string | null;
   impactLevel: 'LOW' | 'MEDIUM' | 'HIGH' | null;
+  score: number;
 }
 
 export interface ArticlesResponse {
@@ -29,11 +30,11 @@ export class ArticlesService {
     page = 1,
     limit = 20,
     category?: string,
-    sort = 'newest',
+    sort = 'score',
   ): Observable<ArticlesResponse> {
     const params: Record<string, string | number> = { page, limit };
     if (category) params['category'] = category;
-    if (sort !== 'newest') params['sort'] = sort;
+    if (sort !== 'score') params['sort'] = sort;
     return this.api.get<ArticlesResponse>('articles', params);
   }
 

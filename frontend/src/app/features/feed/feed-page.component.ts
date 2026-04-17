@@ -28,7 +28,7 @@ export class FeedPageComponent implements OnInit {
   currentPage = signal(1);
   total = signal(0);
   activeCategory = signal<string | undefined>(undefined);
-  activeSort = signal<string>('newest');
+  activeSort = signal<string>('score');
 
   navigationItems: NavMenuItem[] = [
     { label: 'All', categoryKey: null },
@@ -48,7 +48,7 @@ export class FeedPageComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((params) => {
       const category = params.get('category') ?? undefined;
-      const sort = params.get('sort') ?? 'newest';
+      const sort = params.get('sort') ?? 'score';
       this.activeCategory.set(category);
       this.activeSort.set(sort);
       this.loadArticles(1, category, sort);

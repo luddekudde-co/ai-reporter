@@ -14,6 +14,7 @@ export interface SortOption {
 }
 
 export const SORT_OPTIONS: SortOption[] = [
+  { label: 'Top stories', value: 'score' },
   { label: 'Newest first', value: 'newest' },
   { label: 'Oldest first', value: 'oldest' },
   { label: 'Highest impact', value: 'impact' },
@@ -35,21 +36,21 @@ export class FeedFilterBarComponent {
   readonly sortOptions = SORT_OPTIONS;
 
   readonly activeSort = toSignal(
-    this.route.queryParamMap.pipe(map((p) => p.get('sort') ?? 'newest')),
-    { initialValue: 'newest' },
+    this.route.queryParamMap.pipe(map((p) => p.get('sort') ?? 'score')),
+    { initialValue: 'score' },
   );
 
   activeSortLabel(): string {
     return (
       this.sortOptions.find((o) => o.value === this.activeSort())?.label ??
-      'Newest first'
+      'Top stories'
     );
   }
 
   selectSort(value: string, dd: DropdownComponent): void {
     this.router.navigate([], {
       queryParamsHandling: 'merge',
-      queryParams: { sort: value === 'newest' ? null : value },
+      queryParams: { sort: value === 'score' ? null : value },
     });
     dd.close();
   }
