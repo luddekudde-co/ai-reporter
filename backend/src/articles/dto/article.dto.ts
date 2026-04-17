@@ -1,19 +1,19 @@
 export class ArticleDto {
-  id: number;
-  title: string;
-  url: string;
-  summary: string | null;
-  source: string;
-  publishedAt: Date;
-  createdAt: Date;
-  category: string | null;
-  impactLevel: 'LOW' | 'MEDIUM' | 'HIGH' | null;
-  score: number;
+  declare id: number;
+  declare title: string;
+  declare url: string;
+  declare summary: string | null;
+  declare source: string;
+  declare publishedAt: Date;
+  declare createdAt: Date;
+  declare category: string | null;
+  declare impactLevel: 'LOW' | 'MEDIUM' | 'HIGH' | null;
+  declare score: number;
 }
 
 export class ArticlesResponseDto {
-  data: ArticleDto[];
-  total: number;
-  page: number;
-  limit: number;
+  declare data: ArticleDto[];
+  declare total: number;
+  declare page: number;
+  declare limit: number;
 }
