@@ -8,6 +8,7 @@ export class ArticleDto {
   createdAt: Date;
   category: string | null;
   impactLevel: 'LOW' | 'MEDIUM' | 'HIGH' | null;
+  score: number;
 }
 
 export class ArticlesResponseDto {
