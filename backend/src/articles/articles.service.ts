@@ -3,6 +3,9 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ArticleDto, ArticlesResponseDto } from './dto/article.dto';
 
+// λ = ln(2)/12 → score halves every 12 hours
+const DECAY_LAMBDA = 0.0578;
+
 @Injectable()
 export class ArticlesService {
   constructor(private readonly prisma: PrismaService) {}
@@ -11,7 +14,7 @@ export class ArticlesService {
     page: number,
     limit: number,
     category?: string,
-    sort = 'newest',
+    sort = 'score',
   ): Promise<ArticlesResponseDto> {
     const skip = (page - 1) * limit;
     const where = category
@@ -22,13 +25,26 @@ export class ArticlesService {
 
     let data: ArticleDto[];
 
-    if (sort === 'impact') {
+    if (sort === 'score') {
       const categoryClause = category
         ? Prisma.sql`WHERE category ILIKE ${`%${category}%`}`
         : Prisma.empty;
 
       data = await this.prisma.$queryRaw<ArticleDto[]>`
-        SELECT id, title, url, summary, source, "publishedAt", "createdAt", category, "impactLevel"
+        SELECT id, title, url, summary, source, "publishedAt", "createdAt", category, "impactLevel", score
+        FROM "Article"
+        ${categoryClause}
+        ORDER BY
+          score * exp(${-DECAY_LAMBDA} * EXTRACT(EPOCH FROM (NOW() - "publishedAt")) / 3600) DESC
+        LIMIT ${limit} OFFSET ${skip}
+      `;
+    } else if (sort === 'impact') {
+      const categoryClause = category
+        ? Prisma.sql`WHERE category ILIKE ${`%${category}%`}`
+        : Prisma.empty;
+
+      data = await this.prisma.$queryRaw<ArticleDto[]>`
+        SELECT id, title, url, summary, source, "publishedAt", "createdAt", category, "impactLevel", score
         FROM "Article"
         ${categoryClause}
         ORDER BY
