@@ -24,6 +24,7 @@ model Article {
   category       String?
   impactLevel    ImpactLevel?
   aiProcessed    Boolean         @default(false)
+  score          Float           @default(0)
   digestArticles DigestArticle[]
 }
 
