@@ -55,7 +55,7 @@ export class FeedPageComponent implements OnInit {
     });
   }
 
-  loadArticles(page: number, category?: string, sort = 'newest'): void {
+  loadArticles(page: number, category?: string, sort = 'score'): void {
     this.isLoading.set(true);
     this.currentPage.set(page);
     this.articlesService
