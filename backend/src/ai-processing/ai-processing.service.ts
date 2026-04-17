@@ -13,6 +13,12 @@ interface AiResult {
   impactLevel: 'LOW' | 'MEDIUM' | 'HIGH';
 }
 
+const IMPACT_SCORE: Record<'LOW' | 'MEDIUM' | 'HIGH', number> = {
+  HIGH: 3.0,
+  MEDIUM: 2.0,
+  LOW: 1.0,
+};
+
 @Injectable()
 export class AiProcessingService {
   private readonly logger = new Logger(AiProcessingService.name);
@@ -54,14 +60,15 @@ export class AiProcessingService {
       const summary = result.summary ?? article.summary;
       const category = result.category ?? null;
       const impactLevel = this.parseImpactLevel(result.impactLevel);
+      const score = IMPACT_SCORE[impactLevel];
 
       await this.prisma.article.update({
         where: { id },
-        data: { summary, category, impactLevel, aiProcessed: true },
+        data: { summary, category, impactLevel, aiProcessed: true, score },
       });
 
       this.logger.log(
-        `Article ${id} processed — category: ${category}, impact: ${impactLevel}`,
+        `Article ${id} processed — category: ${category}, impact: ${impactLevel}, score: ${score}`,
       );
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
