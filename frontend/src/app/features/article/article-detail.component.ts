@@ -60,7 +60,11 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   toggleChat(): void {
-    this.chatOpen.update((open) => !open);
+    const nowOpen = !this.chatOpen();
+    this.chatOpen.set(nowOpen);
+    if (!nowOpen) {
+      this.messages.set([]);
+    }
   }
 
   sendMessage(text: string): void {
