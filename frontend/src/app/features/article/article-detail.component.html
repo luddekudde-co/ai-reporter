@@ -54,14 +54,20 @@
                 <p class="c-article-detail__summary-text">
                   {{ article()!.summary }}
                 </p>
-                <a
-                  [href]="article()!.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
                   class="c-article-detail__deep-dive"
+                  (click)="toggleChat()"
                 >
-                  Deep Dive with AI &rarr;
-                </a>
+                  {{ chatOpen() ? "Close AI Chat ✕" : "Deep Dive with AI →" }}
+                </button>
+
+                @if (chatOpen()) {
+                  <app-article-chat
+                    [messages]="messages()"
+                    [isSending]="isSending()"
+                    (send)="sendMessage($event)"
+                  />
+                }
               </div>
             }
           </div>
