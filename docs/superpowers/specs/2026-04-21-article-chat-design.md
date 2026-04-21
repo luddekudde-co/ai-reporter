@@ -16,23 +16,25 @@ Replace the "Deep Dive with AI" link on the article detail page with an inline c
 
 ### New module: `ChatModule`
 
-**Endpoint:** `POST /api/chat/:articleId`
+**Endpoint:** `POST /api/chat`
 
 **Request body:**
 ```ts
 {
+  title: string;
+  summary: string;
+  source: string;
   messages: { role: 'user' | 'assistant'; content: string }[];
 }
 ```
 
 **Behavior:**
-1. Fetch article from DB by `articleId` (title + summary).
-2. Build a system prompt that anchors the AI to the article context.
-3. Prepend system message to the incoming `messages` array.
-4. Call OpenAI `gpt-4o-mini` with the full message array (non-streaming).
-5. Return `{ reply: string }`.
+1. Build a system prompt using the provided `title`, `summary`, and `source`.
+2. Prepend system message to the incoming `messages` array.
+3. Call OpenAI `gpt-4o-mini` with the full message array (non-streaming).
+4. Return `{ reply: string }`.
 
-**Error handling:** Return 404 if article not found. Return 500 with a generic message if OpenAI fails.
+**Error handling:** Return 400 if required fields are missing. Return 500 with a generic message if OpenAI fails. No DB access needed.
 
 **Files to create:**
 - `backend/src/chat/chat.module.ts`
@@ -50,9 +52,9 @@ Register `ChatModule` in `app.module.ts`.
 
 A new injectable service at `frontend/src/app/core/services/chat.service.ts`.
 
-Method: `sendMessage(articleId: number, messages: ChatMessage[]): Observable<{ reply: string }>`
+Method: `sendMessage(article: { title: string; summary: string; source: string }, messages: ChatMessage[]): Observable<{ reply: string }>`
 
-Calls `POST /api/chat/:articleId` with the full message array.
+Calls `POST /api/chat` with the article context and full message array.
 
 ### ArticleDetailComponent changes
 
