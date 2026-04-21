@@ -86,4 +86,14 @@
       cursor: not-allowed;
     }
   }
+
+  @media (max-width: 768px) {
+    &__messages {
+      max-height: 280px;
+    }
+
+    &__send {
+      padding: 10px 14px;
+    }
+  }
 }

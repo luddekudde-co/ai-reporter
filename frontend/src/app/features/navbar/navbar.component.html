@@ -1,5 +1,6 @@
 <nav class="c-navbar">
   <a class="c-navbar__brand" routerLink="/">AI-Reporter</a>
+
   <div class="c-navbar__links">
     <a
       class="c-navbar__link"
@@ -14,10 +15,43 @@
       >News Digest</a
     >
   </div>
+
   <div class="c-navbar__actions">
     <a class="c-navbar__sign-in c-navbar__sign-in--is-disabled">Sign In</a>
     <button class="c-navbar__sign-up c-navbar__sign-up--is-disabled" disabled>
       Sign Up
     </button>
   </div>
+
+  <button
+    type="button"
+    class="c-navbar__hamburger"
+    (click)="toggleMenu()"
+    [attr.aria-expanded]="menuOpen()"
+    aria-label="Toggle navigation"
+  >
+    {{ menuOpen() ? "✕" : "☰" }}
+  </button>
 </nav>
+
+@if (menuOpen()) {
+  <div class="c-navbar__mobile-menu">
+    <a
+      class="c-navbar__mobile-link"
+      routerLink="/feed"
+      routerLinkActive="c-navbar__mobile-link--is-active"
+      (click)="closeMenu()"
+      >Feed</a
+    >
+    <a
+      class="c-navbar__mobile-link"
+      routerLink="/digest"
+      routerLinkActive="c-navbar__mobile-link--is-active"
+      (click)="closeMenu()"
+      >News Digest</a
+    >
+    <a class="c-navbar__mobile-link c-navbar__mobile-link--is-disabled"
+      >Sign In</a
+    >
+  </div>
+}
