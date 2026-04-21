@@ -9,6 +9,7 @@ import { ArticlesModule } from './articles/articles.module';
 import { IngestionModule } from './ingestion/ingestion.module';
 import { AiProcessingModule } from './ai-processing/ai-processing.module';
 import { DigestModule } from './digest/digest.module';
+import { ChatModule } from './chat/chat.module';
 
 function redisConnection() {
   const url = process.env.REDIS_URL;
@@ -28,6 +29,7 @@ function redisConnection() {
     IngestionModule,
     AiProcessingModule,
     DigestModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

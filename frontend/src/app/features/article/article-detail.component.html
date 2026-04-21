@@ -10,9 +10,6 @@
         <a class="c-article-detail__back" routerLink="/feed"
           >&larr; Back to Feed</a
         >
-        <nav class="c-article-detail__breadcrumb">
-          Feed / {{ article()!.category ?? "General" }} / Article
-        </nav>
         <div class="c-article-detail__pills">
           @if (article()!.category) {
             <span class="c-article-detail__pill--category">{{
@@ -54,14 +51,21 @@
                 <p class="c-article-detail__summary-text">
                   {{ article()!.summary }}
                 </p>
-                <a
-                  [href]="article()!.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
                   class="c-article-detail__deep-dive"
+                  type="button"
+                  (click)="toggleChat()"
                 >
-                  Deep Dive with AI &rarr;
-                </a>
+                  {{ chatOpen() ? "Close AI Chat ✕" : "Deep Dive with AI →" }}
+                </button>
+
+                @if (chatOpen()) {
+                  <app-article-chat
+                    [messages]="messages()"
+                    [isSending]="isSending()"
+                    (send)="sendMessage($event)"
+                  />
+                }
               </div>
             }
           </div>
