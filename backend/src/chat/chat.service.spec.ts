@@ -2,14 +2,14 @@
 import { Test } from '@nestjs/testing';
 import { ChatService } from './chat.service';
 
+const mockCreate = jest.fn();
+
 jest.mock('openai', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => ({
     chat: {
       completions: {
-        create: jest.fn().mockResolvedValue({
-          choices: [{ message: { content: 'Test reply' } }],
-        }),
+        create: mockCreate,
       },
     },
   })),
@@ -19,6 +19,9 @@ describe('ChatService', () => {
   let service: ChatService;
 
   beforeEach(async () => {
+    mockCreate.mockResolvedValue({
+      choices: [{ message: { content: 'Test reply' } }],
+    });
     const module = await Test.createTestingModule({
       providers: [ChatService],
     }).compile();
@@ -33,20 +36,8 @@ describe('ChatService', () => {
   });
 
   it('returns empty string when OpenAI returns no content', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const OpenAI = require('openai').default as jest.Mock;
-    OpenAI.mockImplementationOnce(() => ({
-      chat: {
-        completions: {
-          create: jest.fn().mockResolvedValue({ choices: [] }),
-        },
-      },
-    }));
-    const module = await Test.createTestingModule({
-      providers: [ChatService],
-    }).compile();
-    const svc = module.get(ChatService);
-    const reply = await svc.chat('T', 'S', 'Src', []);
+    mockCreate.mockResolvedValueOnce({ choices: [] });
+    const reply = await service.chat('T', 'S', 'Src', []);
     expect(reply).toBe('');
   });
 });
