@@ -1,0 +1,41 @@
+<!-- Chat panel: scrollable message list + input row -->
+<div class="c-article-chat">
+  <div class="c-article-chat__messages" #messageList>
+    @for (message of messages(); track $index) {
+      <div
+        class="c-article-chat__message"
+        [class.c-article-chat__message--user]="message.role === 'user'"
+        [class.c-article-chat__message--assistant]="
+          message.role === 'assistant'
+        "
+      >
+        {{ message.content }}
+      </div>
+    }
+    @if (isSending()) {
+      <div
+        class="c-article-chat__message c-article-chat__message--assistant c-article-chat__message--thinking"
+      >
+        Thinking…
+      </div>
+    }
+  </div>
+
+  <div class="c-article-chat__input-row">
+    <textarea
+      class="c-article-chat__input"
+      [(ngModel)]="draft"
+      (keydown)="onKeydown($event)"
+      placeholder="Ask a question about this article…"
+      rows="2"
+      [disabled]="isSending()"
+    ></textarea>
+    <button
+      class="c-article-chat__send"
+      (click)="submit()"
+      [disabled]="isSending() || !draft.trim()"
+    >
+      Send
+    </button>
+  </div>
+</div>
