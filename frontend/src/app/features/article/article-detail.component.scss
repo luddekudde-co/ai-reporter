@@ -189,4 +189,27 @@
     font-size: 13px;
     color: var(--color-body-text);
   }
+
+  @media (max-width: 768px) {
+    &__state {
+      padding: 40px 16px;
+    }
+
+    &__hero-inner,
+    &__body-inner {
+      padding: 0 16px;
+    }
+
+    &__title {
+      font-size: 24px;
+    }
+
+    &__columns {
+      flex-direction: column;
+    }
+
+    &__sidebar {
+      width: 100%;
+    }
+  }
 }
