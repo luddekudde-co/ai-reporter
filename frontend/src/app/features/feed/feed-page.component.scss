@@ -76,6 +76,10 @@
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 24px;
 
+    @media (max-width: 576px) {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
     app-article-card {
       width: 100%;
     }
