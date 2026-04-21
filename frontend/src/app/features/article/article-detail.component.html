@@ -10,9 +10,6 @@
         <a class="c-article-detail__back" routerLink="/feed"
           >&larr; Back to Feed</a
         >
-        <nav class="c-article-detail__breadcrumb">
-          Feed / {{ article()!.category ?? "General" }} / Article
-        </nav>
         <div class="c-article-detail__pills">
           @if (article()!.category) {
             <span class="c-article-detail__pill--category">{{
