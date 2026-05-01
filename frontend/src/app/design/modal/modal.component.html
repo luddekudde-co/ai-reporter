@@ -1,0 +1,19 @@
+@if (isOpen) {
+  <div class="c-modal-backdrop" (click)="closed.emit()">
+    <div class="c-modal-container" (click)="$event.stopPropagation()">
+      <div class="c-modal-header">
+        <h2 class="c-modal-title">{{ title }}</h2>
+        <button
+          class="c-modal-close"
+          (click)="closed.emit()"
+          aria-label="Close"
+        >
+          &times;
+        </button>
+      </div>
+      <div class="c-modal-body">
+        <ng-content />
+      </div>
+    </div>
+  </div>
+}
