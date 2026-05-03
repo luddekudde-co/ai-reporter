@@ -92,15 +92,28 @@ export class ArticleDetailComponent implements OnInit {
           ]);
           this.isSending.set(false);
         },
-        error: () => {
-          this.messages.update((msgs) => [
-            ...msgs,
-            {
-              role: 'assistant',
-              content: 'Sorry, something went wrong. Please try again.',
-            },
-          ]);
-          this.isSending.set(false);
+        error: (error) => {
+          if (error.status === 401) {
+            // Unauthorized
+            this.messages.update((msgs) => [
+              ...msgs,
+              {
+                role: 'assistant',
+                content:
+                  'You are unauthenticated. Please log in to use the chat feature.',
+              },
+            ]);
+            this.isSending.set(false);
+          } else {
+            this.messages.update((msgs) => [
+              ...msgs,
+              {
+                role: 'assistant',
+                content: 'Sorry, something went wrong. Please try again.',
+              },
+            ]);
+            this.isSending.set(false);
+          }
         },
       });
   }
