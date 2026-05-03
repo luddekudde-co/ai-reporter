@@ -1,0 +1,11 @@
+<div class="c-app-input">
+  @if (label()) {
+    <label> {{ label() }}</label>
+  }
+  <input
+    [placeholder]="placeholder()"
+    [type]="type()"
+    [ngModel]="value()"
+    (ngModelChange)="value.set($event)"
+  />
+</div>

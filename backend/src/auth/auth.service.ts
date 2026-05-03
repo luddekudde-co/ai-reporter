@@ -14,7 +14,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(email: string, password: string) {
+  async register(
+    email: string,
+    password: string,
+  ): Promise<{ id: string; email: string; createdAt: Date }> {
     const existingUser = await this.userService.findUserByEmail(email);
     if (existingUser) {
       throw new ConflictException('User already exists');

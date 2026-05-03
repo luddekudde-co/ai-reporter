@@ -17,11 +17,45 @@
   </div>
 
   <div class="c-navbar__actions">
-    <a class="c-navbar__sign-in c-navbar__sign-in--is-disabled">Sign In</a>
-    <button class="c-navbar__sign-up c-navbar__sign-up--is-disabled" disabled>
-      Sign Up
-    </button>
+    <button class="c-navbar__sign-in" (click)="modal('signIn')">Sign In</button>
+    <button class="c-navbar__sign-up" (click)="modal('signUp')">Sign Up</button>
   </div>
+
+  <app-modal
+    title="Sign in"
+    [isOpen]="signInModalOpen()"
+    (closed)="signInModalOpen.set(false)"
+  >
+    <app-input
+      placeholder="Enter your email"
+      type="email"
+      [(value)]="emailValue"
+    ></app-input>
+    <app-input
+      placeholder="Enter your password"
+      type="password"
+      [(value)]="passwordValue"
+    ></app-input>
+    <button (click)="signIn(emailValue, passwordValue)">Sign in</button>
+  </app-modal>
+
+  <app-modal
+    title="Sign up"
+    [isOpen]="signUpModalOpen()"
+    (closed)="signUpModalOpen.set(false)"
+  >
+    <app-input
+      [(value)]="emailValue"
+      placeholder="Enter your email"
+      type="email"
+    ></app-input>
+    <app-input
+      [(value)]="passwordValue"
+      placeholder="Enter your password"
+      type="password"
+    ></app-input>
+    <button (click)="signUp(emailValue, passwordValue)">Sign up</button>
+  </app-modal>
 
   <button
     type="button"

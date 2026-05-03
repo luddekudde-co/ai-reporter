@@ -47,27 +47,6 @@
     align-items: center;
     gap: 20px;
     position: relative;
-
-    &::after {
-      content: "Coming soon";
-      position: absolute;
-      bottom: -32px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 4px;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.15s ease;
-    }
-
-    &:hover::after {
-      opacity: 1;
-    }
   }
 
   &__sign-in {
@@ -75,15 +54,11 @@
     font-weight: 500;
     color: var(--color-muted);
     text-decoration: none;
+    border: none;
+    background-color: transparent;
 
-    /*     &:hover {
+    &:hover {
       color: white;
-    } */
-
-    &--is-disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-      pointer-events: none;
     }
   }
 
@@ -97,13 +72,8 @@
     font-weight: 600;
     cursor: pointer;
 
-    /*     &:hover {
+    &:hover {
       opacity: 0.9;
-    } */
-
-    &--is-disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
     }
   }
 
