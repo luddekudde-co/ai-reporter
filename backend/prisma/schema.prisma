@@ -44,3 +44,10 @@ model DigestArticle {
   articleId Int
   rank      Int
 }
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}

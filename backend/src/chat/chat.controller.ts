@@ -1,5 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ChatService, ChatMessage } from './chat.service';
+import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 
 interface ChatRequestDto {
   title: string;
@@ -12,6 +13,7 @@ interface ChatRequestDto {
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async chat(@Body() body: ChatRequestDto) {
     const reply = await this.chatService.chat(

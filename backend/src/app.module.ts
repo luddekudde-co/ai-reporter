@@ -10,6 +10,8 @@ import { IngestionModule } from './ingestion/ingestion.module';
 import { AiProcessingModule } from './ai-processing/ai-processing.module';
 import { DigestModule } from './digest/digest.module';
 import { ChatModule } from './chat/chat.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 function redisConnection() {
   const url = process.env.REDIS_URL;
@@ -30,6 +32,8 @@ function redisConnection() {
     AiProcessingModule,
     DigestModule,
     ChatModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
