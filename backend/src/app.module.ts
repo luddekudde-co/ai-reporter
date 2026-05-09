@@ -12,6 +12,7 @@ import { DigestModule } from './digest/digest.module';
 import { ChatModule } from './chat/chat.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { CleanupModule } from './cleanup/cleanup.module';
 
 function redisConnection() {
   const url = process.env.REDIS_URL;
@@ -34,6 +35,7 @@ function redisConnection() {
     ChatModule,
     UsersModule,
     AuthModule,
+    CleanupModule,
   ],
   controllers: [AppController],
   providers: [AppService],
