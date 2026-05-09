@@ -1,16 +1,22 @@
 /**
- * FeedPageComponent — lists daily AI news articles fetched from the backend API.
- * Supports category filtering via ?category= and sort ordering via ?sort= query params.
- * Handles pagination and loading state using Angular signals.
+ * FeedPageComponent — renders the infinite-scroll article feed.
+ * All state lives in FeedStore (survives navigation for scroll restoration).
+ * An IntersectionObserver on #scrollSentinel triggers loading more articles.
  */
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ArticleCardComponent } from '../../design/article-card/article-card.component';
-import { ArticlesService, Article } from '../../core/services/articles.service';
 import { NavMenuItem } from '../../design/nav-menu/nav-menu.component';
 import { FeedFilterBarComponent } from './feed-filter-bar/feed-filter-bar.component';
-
-const PAGE_SIZE = 20;
+import { FeedStore } from './feed.store';
 
 @Component({
   selector: 'app-feed-page',
@@ -19,16 +25,14 @@ const PAGE_SIZE = 20;
   templateUrl: './feed-page.component.html',
   styleUrl: './feed-page.component.scss',
 })
-export class FeedPageComponent implements OnInit {
-  private readonly articlesService = inject(ArticlesService);
-  private readonly route = inject(ActivatedRoute);
+export class FeedPageComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('scrollSentinel') private sentinelRef!: ElementRef;
 
-  articles = signal<Article[]>([]);
-  isLoading = signal(true);
-  currentPage = signal(1);
-  total = signal(0);
-  activeCategory = signal<string | undefined>(undefined);
-  activeSort = signal<string>('score');
+  private readonly route = inject(ActivatedRoute);
+  readonly feedStore = inject(FeedStore);
+
+  private observer!: IntersectionObserver;
+  private shouldRestoreScroll = false;
 
   navigationItems: NavMenuItem[] = [
     { label: 'All', categoryKey: null },
@@ -41,48 +45,51 @@ export class FeedPageComponent implements OnInit {
     { label: 'Research', categoryKey: 'research' },
   ];
 
-  get totalPages(): number {
-    return Math.ceil(this.total() / PAGE_SIZE);
-  }
-
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((params) => {
       const category = params.get('category') ?? undefined;
       const sort = params.get('sort') ?? 'score';
-      this.activeCategory.set(category);
-      this.activeSort.set(sort);
-      this.loadArticles(1, category, sort);
+
+      const isBackNav =
+        this.feedStore.articles().length > 0 &&
+        this.feedStore.activeCategory() === category &&
+        this.feedStore.activeSort() === sort;
+
+      if (isBackNav) {
+        this.shouldRestoreScroll = true;
+      } else {
+        this.feedStore.reset(category, sort);
+      }
     });
   }
 
-  loadArticles(page: number, category?: string, sort = 'score'): void {
-    this.isLoading.set(true);
-    this.currentPage.set(page);
-    this.articlesService
-      .getArticles(page, PAGE_SIZE, category, sort)
-      .subscribe({
-        next: (res) => {
-          this.articles.set(res.data);
-          this.total.set(res.total);
-          this.isLoading.set(false);
-        },
-        error: () => this.isLoading.set(false),
-      });
-  }
-
-  goToPage(page: number): void {
-    this.loadArticles(page, this.activeCategory(), this.activeSort());
-  }
-
-  goToPageFromInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const raw = parseInt(input.value, 10);
-    const page = isNaN(raw)
-      ? this.currentPage()
-      : Math.min(Math.max(raw, 1), this.totalPages);
-    input.value = String(page);
-    if (page !== this.currentPage()) {
-      this.goToPage(page);
+  ngAfterViewInit(): void {
+    if (this.shouldRestoreScroll) {
+      const y = this.feedStore.getScrollPosition();
+      requestAnimationFrame(() =>
+        window.scrollTo({ top: y, behavior: 'instant' }),
+      );
+      this.shouldRestoreScroll = false;
     }
+
+    this.observer = new IntersectionObserver(
+      ([entry]) => {
+        if (
+          entry.isIntersecting &&
+          !this.feedStore.isLoading() &&
+          this.feedStore.hasMore()
+        ) {
+          this.feedStore.loadMore();
+        }
+      },
+      { rootMargin: '300px' },
+    );
+
+    this.observer.observe(this.sentinelRef.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    this.feedStore.saveScrollPosition(window.scrollY);
+    this.observer?.disconnect();
   }
 }

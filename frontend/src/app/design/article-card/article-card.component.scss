@@ -4,7 +4,6 @@
 }
 
 .c-article-card {
-  height: 200px;
   display: flex;
   flex-direction: column;
   background: white;
@@ -90,10 +89,6 @@
     line-height: 1.5;
     margin: 0 23px;
     flex: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 
   &__footer {
