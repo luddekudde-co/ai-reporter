@@ -26,17 +26,28 @@
     [isOpen]="signInModalOpen()"
     (closed)="signInModalOpen.set(false)"
   >
-    <app-input
-      placeholder="Enter your email"
-      type="email"
-      [(value)]="emailValue"
-    ></app-input>
-    <app-input
-      placeholder="Enter your password"
-      type="password"
-      [(value)]="passwordValue"
-    ></app-input>
-    <button (click)="signIn(emailValue, passwordValue)">Sign in</button>
+    <div class="c-navbar__modal-form">
+      <app-input
+        placeholder="Enter your email"
+        type="email"
+        [(value)]="emailValue"
+      ></app-input>
+      <app-input
+        placeholder="Enter your password"
+        type="password"
+        [(value)]="passwordValue"
+      ></app-input>
+      @if (userStore.loginError()) {
+        <p class="c-navbar__modal-error">{{ userStore.loginError() }}</p>
+      }
+      <button
+        class="c-navbar__modal-submit"
+        (click)="signIn(emailValue, passwordValue)"
+        [disabled]="userStore.isLoading()"
+      >
+        Sign in
+      </button>
+    </div>
   </app-modal>
 
   <app-modal
@@ -44,17 +55,28 @@
     [isOpen]="signUpModalOpen()"
     (closed)="signUpModalOpen.set(false)"
   >
-    <app-input
-      [(value)]="emailValue"
-      placeholder="Enter your email"
-      type="email"
-    ></app-input>
-    <app-input
-      [(value)]="passwordValue"
-      placeholder="Enter your password"
-      type="password"
-    ></app-input>
-    <button (click)="signUp(emailValue, passwordValue)">Sign up</button>
+    <div class="c-navbar__modal-form">
+      <app-input
+        [(value)]="emailValue"
+        placeholder="Enter your email"
+        type="email"
+      ></app-input>
+      <app-input
+        [(value)]="passwordValue"
+        placeholder="Enter your password"
+        type="password"
+      ></app-input>
+      @if (userStore.registerError()) {
+        <p class="c-navbar__modal-error">{{ userStore.registerError() }}</p>
+      }
+      <button
+        class="c-navbar__modal-submit"
+        (click)="signUp(emailValue, passwordValue)"
+        [disabled]="userStore.isLoading()"
+      >
+        Sign up
+      </button>
+    </div>
   </app-modal>
 
   <button

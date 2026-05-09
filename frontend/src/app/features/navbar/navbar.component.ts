@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ModalComponent } from '../../design/modal/modal.component';
 import { InputComponent } from '../../design/input/input.component';
-import { AuthService } from '../../services/auth-service/auth.service';
+import { UserStore } from '../../stores/user.store';
 
 @Component({
   selector: 'app-navbar',
@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth-service/auth.service';
   styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent {
-  private authService = inject(AuthService);
+  userStore = inject(UserStore);
 
   menuOpen = signal(false);
   signInModalOpen = signal(false);
@@ -39,18 +39,20 @@ export class NavbarComponent {
     }
   }
 
-  signUp(email: string, password: string) {
-    console.log('Signing up with', email, password);
-    this.authService.register(email, password).subscribe((response) => {
-      console.log('User registered:', response);
-    });
+  signIn(email: string, password: string): void {
+    this.userStore.login(email, password, () =>
+      this.signInModalOpen.set(false),
+    );
   }
 
-  signIn(email: string, password: string) {
-    console.log('Signing in with', email, password);
-    this.authService.login(email, password).subscribe((response) => {
-      console.log('User logged in:', response);
-      this.authService.setAccessToken(response.accessToken);
-    });
+  signUp(email: string, password: string): void {
+    this.userStore.register(email, password, () =>
+      this.signUpModalOpen.set(false),
+    );
+  }
+
+  logout(): void {
+    this.userStore.logout();
+    this.closeMenu();
   }
 }

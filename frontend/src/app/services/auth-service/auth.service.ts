@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-interface RegisterResponse {
+export interface RegisterResponse {
   id: string;
   email: string;
   createdAt: Date;
@@ -10,25 +10,20 @@ interface RegisterResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  http = inject(HttpClient);
+  private http = inject(HttpClient);
 
-  accessToken: string | null = null;
-
-  constructor() {
-    this.accessToken = localStorage.getItem('accessToken');
+  getStoredToken(): string | null {
+    return localStorage.getItem('accessToken');
   }
 
-  setAccessToken(token: string) {
-    this.accessToken = token;
+  setAccessToken(token: string): void {
     localStorage.setItem('accessToken', token);
   }
 
-  clearAccessToken() {
-    this.accessToken = null;
+  clearAccessToken(): void {
     localStorage.removeItem('accessToken');
   }
 
-  // Resource?
   register(email: string, password: string): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>('/api/auth/register', {
       email,

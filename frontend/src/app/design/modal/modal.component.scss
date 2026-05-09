@@ -1,7 +1,7 @@
 .c-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,36 +9,38 @@
 }
 
 .c-modal-container {
-  background: #fff;
-  border-radius: 8px;
+  background: white;
+  border-radius: 12px;
   width: 100%;
-  max-width: 440px;
-  padding: 8px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  padding: 28px 32px 32px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
 }
 
 .c-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
 }
 
 .c-modal-title {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
+  color: var(--color-dark);
 }
 
 .c-modal-close {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   cursor: pointer;
-  color: #666;
+  color: var(--color-muted);
   line-height: 1;
+  padding: 2px 6px;
 
   &:hover {
-    color: #000;
+    color: black;
   }
 }
