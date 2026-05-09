@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -15,6 +16,6 @@ export class AuthService {
   }
 
   redirectToGoogle(): void {
-    window.location.href = '/api/auth/google';
+    window.location.href = `${environment.apiUrl}/auth/google`;
   }
 }
