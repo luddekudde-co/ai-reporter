@@ -1,7 +1,7 @@
 ---
 title: Authentication — Sign Up / Login
 date: 2026-04-21
-status: draft
+status: implemented (partial — Google OAuth, /auth/me, and policy checkbox deferred)
 ---
 
 # Authentication Design
@@ -14,7 +14,7 @@ The app currently has no authentication. Several features (starting with AI chat
 
 ## Approach
 
-NestJS JWT + Passport (Option A). Custom auth fully integrated with the existing NestJS + Prisma + PostgreSQL stack. Access tokens stored in `localStorage`, 7-day expiry, no refresh token (keep it simple for now). Google OAuth via `passport-google-oauth20`.
+NestJS JWT + Passport. Custom auth fully integrated with the existing NestJS + Prisma + PostgreSQL stack. Access tokens stored in `localStorage`, **15-minute expiry**, no refresh token. Google OAuth deferred.
 
 ---
 
@@ -22,16 +22,14 @@ NestJS JWT + Passport (Option A). Custom auth fully integrated with the existing
 
 ```prisma
 model User {
-  id               String    @id @default(cuid())
-  email            String    @unique
-  name             String?
-  passwordHash     String?   // null for Google-only users
-  googleId         String?   @unique
-  acceptedPolicyAt DateTime? // recorded at sign-up for compliance
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
 }
 ```
+
+> Note: `name`, `googleId`, `acceptedPolicyAt`, and `updatedAt` were deferred — the implemented model is simpler.
 
 ---
 
@@ -43,18 +41,17 @@ model User {
 - `bcrypt`, `@types/bcrypt`
 - `@types/passport-google-oauth20`
 
-### Auth endpoints
+### Auth endpoints (implemented)
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| POST | `/api/auth/register` | Public | `{ email, password, name, acceptedPolicy }` → `{ accessToken, user }` |
-| POST | `/api/auth/login` | Public | `{ email, password }` → `{ accessToken, user }` |
-| GET | `/api/auth/google` | Public | Redirect to Google consent screen |
-| GET | `/api/auth/google/callback` | Public | Google callback → JWT → redirect to `/?token=...` |
-| GET | `/api/auth/me` | JWT | Returns `{ id, email, name }` |
+| POST | `/api/auth/register` | Public | `{ email, password }` → `{ id, email, createdAt }` |
+| POST | `/api/auth/login` | Public | `{ email, password }` → `{ accessToken }` |
+
+Deferred: `GET /api/auth/google`, `GET /api/auth/google/callback`, `GET /api/auth/me`
 
 ### Protected endpoints
-- `POST /api/chat` — add `@UseGuards(JwtAuthGuard)` — returns 401 if no valid token
+- `POST /api/chat` — guarded by `JwtAuthGuard` — returns 401 if no valid token
 
 ### Module structure
 ```
@@ -62,102 +59,98 @@ backend/src/auth/
   auth.module.ts
   auth.controller.ts
   auth.service.ts
-  strategies/
-    jwt.strategy.ts
-    google.strategy.ts
-  guards/
-    jwt-auth.guard.ts
+  jwt.strategy.ts
+  jwt.auth.guard.ts
   dto/
     register.dto.ts
     login.dto.ts
 ```
 
-### New env vars required
+### Env vars required
 ```
 JWT_SECRET=...
-JWT_EXPIRES_IN=7d
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
+JWT_EXPIRES_IN=15m
 ```
 
 ---
 
 ## Frontend
 
-### New packages
-None — uses Angular's built-in `HttpClient` interceptors and `@angular/router` guards.
-
-### New files
+### Implemented files
 
 ```
 frontend/src/app/
+  stores/
+    user.store.ts              ← signal store: owns all auth UI state
+  services/auth-service/
+    auth.service.ts            ← pure HTTP layer + localStorage token helpers
+  interceptors/
+    auth.interceptor.ts        ← attaches Authorization: Bearer header
   design/
-    modal/
-      modal.component.ts       ← reusable backdrop + container
-      modal.component.html
-      modal.component.scss
-
-  features/auth/
-    auth-modal/
-      auth-modal.component.ts  ← sign-in / sign-up tabs + Google button
-      auth-modal.component.html
-      auth-modal.component.scss
-    auth-policy/
-      auth-policy.component.ts ← policy text + required checkbox (reusable)
-    auth.service.ts            ← login(), register(), logout(), handleGoogleCallback()
-    auth.store.ts              ← signal store: currentUser, isAuthenticated, modalOpen
-    auth.interceptor.ts        ← attaches Bearer token; on 401 → clears token + opens modal
+    modal/                     ← reusable backdrop + container (existing)
+  features/navbar/
+    navbar.component.*         ← Sign In / Sign Up modals live here
 ```
 
-### Modal component API
+### `UserStore` (`frontend/src/app/stores/user.store.ts`)
+Signal service (`providedIn: 'root'`) that owns all auth UI state.
+
 ```ts
-// Inputs
-@Input() title: string
-@Input() isOpen: boolean
+// Public signals (readonly)
+currentUser: Signal<{ email: string } | null>
+isLoggedIn: Signal<boolean>      // computed
+loginError: Signal<string | null>
+registerError: Signal<string | null>
+isLoading: Signal<boolean>
 
-// Outputs
-@Output() closed = new EventEmitter<void>()
-```
-Renders a backdrop div + centered container. Clicking backdrop emits `closed`. Used by `AuthModalComponent` and any future modals.
-
-### Auth store (signal store)
-```ts
-currentUser: Signal<User | null>
-isAuthenticated: Signal<boolean>
-modalOpen: Signal<boolean>
-
-openModal(): void
-closeModal(): void
-setUser(user: User, token: string): void
+// Methods
+login(email, password, onSuccess?: () => void): void
+register(email, password, onSuccess?: () => void): void
 logout(): void
 ```
 
-### Gating pattern
-The chat component injects `AuthStore`. On message send:
+Constructor decodes the stored JWT from `localStorage` to restore session on page load. Clears the token if it's expired. `register()` auto-logs-in after successful registration.
+
+### `AuthService` (`frontend/src/app/services/auth-service/auth.service.ts`)
+Pure HTTP layer — no state.
+
 ```ts
-if (!this.authStore.isAuthenticated()) {
-  this.authStore.openModal();
+getStoredToken(): string | null
+setAccessToken(token: string): void
+clearAccessToken(): void
+register(email, password): Observable<RegisterResponse>
+login(email, password): Observable<{ accessToken: string }>
+```
+
+### Auth interceptor
+Reads token from `localStorage` and injects `Authorization: Bearer <token>` on every outgoing HTTP request.
+
+### Modals
+Auth modals are embedded directly inside `NavbarComponent`. No separate auth modal component. Sign In and Sign Up modals open from navbar buttons and close via `onSuccess` callbacks passed to `UserStore.login()` / `UserStore.register()`. Errors display inline inside each modal.
+
+### Gating pattern (for future protected features)
+```ts
+// Inject UserStore and check before gated action
+if (!this.userStore.isLoggedIn()) {
+  // redirect or show message — no auto-open modal currently
   return;
 }
 ```
-The `AuthModalComponent` is rendered in `AppComponent` and controlled by `authStore.modalOpen`.
 
-### Google OAuth callback
-After Google redirects to `/?token=...`, `AppComponent` reads the query param on init, calls `authStore.setUser()`, and clears the param from the URL.
-
-### Policy agreement
-Sign-up form includes a required checkbox: *"I agree to the [Privacy Policy] — we store your email and name to identify your account."* Cannot submit without checking it. `acceptedPolicy: true` sent in the register request body.
+### Deferred
+- Google OAuth
+- `GET /api/auth/me` endpoint
+- Policy agreement checkbox
+- Auth route guard (no protected routes yet)
 
 ---
 
 ## Verification
 
-1. Register with email/password → receive JWT → `GET /api/auth/me` returns user
-2. Login with wrong password → 401 response
-3. `POST /api/chat` without token → 401
-4. `POST /api/chat` with valid token → response works
-5. Click chat while logged out → auth modal opens automatically
-6. Complete Google OAuth → redirected back, logged in, can use chat
-7. Sign up without checking policy checkbox → form submit blocked
-8. Logout → token cleared → chat blocked again
+1. Register with new email → modal closes, navbar shows email + Sign Out
+2. Reload page → user remains logged in (token restored from localStorage)
+3. Sign Out → navbar reverts to guest state
+4. Login with wrong password → modal stays open, red error message appears
+5. Register with existing email → modal stays open, red error message appears
+6. `POST /api/chat` without token → 401
+7. `POST /api/chat` with valid token → response works
