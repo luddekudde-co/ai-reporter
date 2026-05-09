@@ -23,4 +23,11 @@ export const routes: Routes = [
         (m) => m.DigestPageComponent,
       ),
   },
+  {
+    path: 'auth/callback',
+    loadComponent: () =>
+      import('./pages/auth-callback/auth-callback.component').then(
+        (m) => m.AuthCallbackComponent,
+      ),
+  },
 ];

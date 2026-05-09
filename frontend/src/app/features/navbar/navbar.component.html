@@ -23,72 +23,11 @@
       }}</span>
       <button class="c-navbar__sign-out" (click)="logout()">Sign out</button>
     } @else {
-      <button class="c-navbar__sign-in" (click)="modal('signIn')">
-        Sign In
-      </button>
-      <button class="c-navbar__sign-up" (click)="modal('signUp')">
-        Sign Up
+      <button class="c-navbar__sign-in" (click)="userStore.signInWithGoogle()">
+        Continue with Google
       </button>
     }
   </div>
-
-  <app-modal
-    title="Sign in"
-    [isOpen]="signInModalOpen()"
-    (closed)="signInModalOpen.set(false)"
-  >
-    <div class="c-navbar__modal-form">
-      <app-input
-        placeholder="Enter your email"
-        type="email"
-        [(value)]="emailValue"
-      ></app-input>
-      <app-input
-        placeholder="Enter your password"
-        type="password"
-        [(value)]="passwordValue"
-      ></app-input>
-      @if (userStore.loginError()) {
-        <p class="c-navbar__modal-error">{{ userStore.loginError() }}</p>
-      }
-      <button
-        class="c-navbar__modal-submit"
-        (click)="signIn(emailValue, passwordValue)"
-        [disabled]="userStore.isLoading()"
-      >
-        Sign in
-      </button>
-    </div>
-  </app-modal>
-
-  <app-modal
-    title="Sign up"
-    [isOpen]="signUpModalOpen()"
-    (closed)="signUpModalOpen.set(false)"
-  >
-    <div class="c-navbar__modal-form">
-      <app-input
-        [(value)]="emailValue"
-        placeholder="Enter your email"
-        type="email"
-      ></app-input>
-      <app-input
-        [(value)]="passwordValue"
-        placeholder="Enter your password"
-        type="password"
-      ></app-input>
-      @if (userStore.registerError()) {
-        <p class="c-navbar__modal-error">{{ userStore.registerError() }}</p>
-      }
-      <button
-        class="c-navbar__modal-submit"
-        (click)="signUp(emailValue, passwordValue)"
-        [disabled]="userStore.isLoading()"
-      >
-        Sign up
-      </button>
-    </div>
-  </app-modal>
 
   <button
     type="button"
@@ -122,15 +61,9 @@
     } @else {
       <button
         class="c-navbar__mobile-link"
-        (click)="modal('signIn'); closeMenu()"
+        (click)="userStore.signInWithGoogle(); closeMenu()"
       >
-        Sign In
-      </button>
-      <button
-        class="c-navbar__mobile-link"
-        (click)="modal('signUp'); closeMenu()"
-      >
-        Sign Up
+        Continue with Google
       </button>
     }
   </div>

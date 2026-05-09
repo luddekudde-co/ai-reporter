@@ -22,14 +22,10 @@ export class UserStore {
   private authService = inject(AuthService);
 
   private _currentUser = signal<CurrentUser | null>(null);
-  private _loginError = signal<string | null>(null);
-  private _registerError = signal<string | null>(null);
   private _isLoading = signal(false);
 
   readonly currentUser = this._currentUser.asReadonly();
   readonly isLoggedIn = computed(() => this._currentUser() !== null);
-  readonly loginError = this._loginError.asReadonly();
-  readonly registerError = this._registerError.asReadonly();
   readonly isLoading = this._isLoading.asReadonly();
 
   constructor() {
@@ -44,36 +40,16 @@ export class UserStore {
     }
   }
 
-  login(email: string, password: string, onSuccess?: () => void): void {
-    this._loginError.set(null);
-    this._isLoading.set(true);
-    this.authService.login(email, password).subscribe({
-      next: (res) => {
-        this.authService.setAccessToken(res.accessToken);
-        this._currentUser.set({ email });
-        this._isLoading.set(false);
-        onSuccess?.();
-      },
-      error: () => {
-        this._loginError.set('Invalid email or password.');
-        this._isLoading.set(false);
-      },
-    });
+  signInWithGoogle(): void {
+    this.authService.redirectToGoogle();
   }
 
-  register(email: string, password: string, onSuccess?: () => void): void {
-    this._registerError.set(null);
-    this._isLoading.set(true);
-    this.authService.register(email, password).subscribe({
-      next: () => {
-        this._isLoading.set(false);
-        this.login(email, password, onSuccess);
-      },
-      error: () => {
-        this._registerError.set('Registration failed. Try a different email.');
-        this._isLoading.set(false);
-      },
-    });
+  completeGoogleSignIn(token: string): void {
+    this.authService.setAccessToken(token);
+    const email = decodeTokenEmail(token);
+    if (email) {
+      this._currentUser.set({ email });
+    }
   }
 
   logout(): void {

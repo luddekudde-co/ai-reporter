@@ -7,6 +7,4 @@ import { HomePageHeroComponent } from '../../features/home-page-hero/home-page-h
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
 })
-export class HomePage {
-
-}
+export class HomePage {}

@@ -10,6 +10,9 @@ export class TimeAgoPipe implements PipeTransform {
     if (h < 1) return 'just now';
     if (h < 24) return `${h}h ago`;
     if (d < 7) return `${d}d ago`;
-    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(value));
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+    }).format(new Date(value));
   }
 }

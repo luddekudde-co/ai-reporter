@@ -10,6 +10,6 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './home-page-hero.component.html',
-  styleUrl: './home-page-hero.component.scss'
+  styleUrl: './home-page-hero.component.scss',
 })
 export class HomePageHeroComponent {}

@@ -1,19 +1,23 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('register')
-  async register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto.email, dto.password);
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  googleLogin(): void {
+    // Passport redirects to Google — no body needed
   }
 
-  @Post('login')
-  async login(@Body() dto: LoginDto) {
-    return this.authService.login(dto.email, dto.password);
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  googleCallback(@Req() req: Request, @Res() res: Response): void {
+    const { accessToken } = this.authService.issueJwt(req.user as any);
+    const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:4200';
+    res.redirect(`${frontendUrl}/auth/callback#token=${accessToken}`);
   }
 }
