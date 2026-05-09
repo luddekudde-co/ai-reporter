@@ -97,11 +97,17 @@ ai-reporter/
   - Score (0–100) written to article during AI processing with time-decay formula
   - `ArticlesService` supports score-based sort
   - Feed UI defaults to score ranking; "Top Stories" sort option added
+- **Phase 7 — Authentication (Google OAuth)**
+  - Google OAuth via `passport-google-oauth20`; email/password flow removed entirely
+  - `User` model: `id`, `email`, `googleId` (unique, Google `sub`), `name?`, `avatarUrl?`, `createdAt`
+  - Backend: `GET /api/auth/google` and `GET /api/auth/google/callback`; callback redirects to `${FRONTEND_URL}/auth/callback#token=<jwt>`
+  - Frontend: `/auth/callback` page consumes the hash token, hands it to `UserStore`; `NavbarComponent` shows a single "Continue with Google" button
+  - JWT unchanged (`{ userId, email }`, 15-min expiry, Bearer header via interceptor)
+  - Two Google OAuth clients (dev + prod) — Google blocks mixing localhost and public URLs in one client
 
 ## Not Yet Done
 
 - AI chat interface (`POST /api/chat` + chat panel on article detail)
-- Authentication (JWT, user accounts)
 - Weekly digest pipeline + view
 
 ---
@@ -121,6 +127,10 @@ NestJS (port 3000)
         └── IngestionController → IngestionService → rss-parser → upsert → BullMQ
   └── AiProcessingModule
         └── AiProcessingProcessor (BullMQ worker) → AiProcessingService → OpenAI → PrismaService
+  └── AuthModule
+        └── AuthController (GET /auth/google, GET /auth/google/callback)
+              → GoogleStrategy (passport-google-oauth20) → AuthService → UsersService → PrismaService
+              → JwtModule (15-min token, Bearer)
 
 Infrastructure (Docker)
   └── PostgreSQL 15 (port 5432)
@@ -168,11 +178,13 @@ Infrastructure (Docker)
 - Topic clustering + AI digest generation
 - Digest view page at `/digest`
 
-## Phase 7 — Authentication
+## Phase 7 — Authentication ✅ Done
 
-- JWT-based auth
-- User accounts + reading preferences
-- Protected routes
+- Google OAuth via `passport-google-oauth20` (no email/password)
+- `User` keyed by `googleId` (Google `sub`); auto-created on first sign-in
+- 15-min JWT issued by backend, passed back to frontend via URL hash on `/auth/callback`
+- `UserStore` signal store + auth interceptor (Bearer header) unchanged from prior design
+- Separate Google OAuth clients for dev (localhost) and prod (Vercel + Railway)
 
 ---
 
