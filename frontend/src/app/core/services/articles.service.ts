@@ -31,10 +31,12 @@ export class ArticlesService {
     limit = 20,
     category?: string,
     sort = 'score',
+    search?: string,
   ): Observable<ArticlesResponse> {
     const params: Record<string, string | number> = { page, limit };
     if (category) params['category'] = category;
     if (sort !== 'score') params['sort'] = sort;
+    if (search) params['search'] = search;
     return this.api.get<ArticlesResponse>('articles', params);
   }
 

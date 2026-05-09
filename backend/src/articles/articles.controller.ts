@@ -11,8 +11,9 @@ export class ArticlesController {
     @Query('limit', new ParseIntPipe({ optional: true })) limit = 20,
     @Query('category') category?: string,
     @Query('sort') sort = 'newest',
+    @Query('search') search?: string,
   ) {
-    return this.articlesService.findAll(page, limit, category, sort);
+    return this.articlesService.findAll(page, limit, category, sort, search);
   }
 
   @Get(':id')

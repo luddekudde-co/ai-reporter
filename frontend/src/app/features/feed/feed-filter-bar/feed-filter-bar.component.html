@@ -3,6 +3,18 @@
     <app-nav-menu [navItems]="navItems()" />
   </div>
 
+  <div class="c-feed-filter-bar__search">
+    <input
+      #searchInput
+      class="c-feed-filter-bar__search-input"
+      type="text"
+      placeholder="Search articles..."
+      [value]="feedStore.searchQuery()"
+      (keyup.enter)="onSearchCommit(searchInput.value)"
+      (blur)="onSearchCommit(searchInput.value)"
+    />
+  </div>
+
   <div class="c-feed-filter-bar__sort">
     <app-dropdown #dd [label]="activeSortLabel()">
       @for (option of sortOptions; track option.value) {

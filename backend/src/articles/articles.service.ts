@@ -15,38 +15,56 @@ export class ArticlesService {
     limit: number,
     category?: string,
     sort = 'score',
+    search?: string,
   ): Promise<ArticlesResponseDto> {
     const skip = (page - 1) * limit;
-    const where = category
-      ? { category: { contains: category, mode: 'insensitive' as const } }
-      : {};
+
+    // Raw SQL WHERE for score + impact sorts
+    let rawWhere: Prisma.Sql;
+    if (category && search) {
+      rawWhere = Prisma.sql`WHERE category ILIKE ${`%${category}%`} AND (title ILIKE ${`%${search}%`} OR summary ILIKE ${`%${search}%`})`;
+    } else if (category) {
+      rawWhere = Prisma.sql`WHERE category ILIKE ${`%${category}%`}`;
+    } else if (search) {
+      rawWhere = Prisma.sql`WHERE (title ILIKE ${`%${search}%`} OR summary ILIKE ${`%${search}%`})`;
+    } else {
+      rawWhere = Prisma.empty;
+    }
+
+    // Prisma ORM WHERE for newest + oldest sorts and count
+    const andConditions: Prisma.ArticleWhereInput[] = [];
+    if (category)
+      andConditions.push({
+        category: { contains: category, mode: 'insensitive' },
+      });
+    if (search)
+      andConditions.push({
+        OR: [
+          { title: { contains: search, mode: 'insensitive' } },
+          { summary: { contains: search, mode: 'insensitive' } },
+        ],
+      });
+    const where: Prisma.ArticleWhereInput =
+      andConditions.length > 0 ? { AND: andConditions } : {};
 
     const total = await this.prisma.article.count({ where });
 
     let data: ArticleDto[];
 
     if (sort === 'score') {
-      const categoryClause = category
-        ? Prisma.sql`WHERE category ILIKE ${`%${category}%`}`
-        : Prisma.empty;
-
       data = await this.prisma.$queryRaw<ArticleDto[]>`
         SELECT id, title, url, summary, source, "publishedAt", "createdAt", category, "impactLevel", score
         FROM "Article"
-        ${categoryClause}
+        ${rawWhere}
         ORDER BY
           score * exp(${-DECAY_LAMBDA} * EXTRACT(EPOCH FROM (NOW() - "publishedAt")) / 3600) DESC
         LIMIT ${limit} OFFSET ${skip}
       `;
     } else if (sort === 'impact') {
-      const categoryClause = category
-        ? Prisma.sql`WHERE category ILIKE ${`%${category}%`}`
-        : Prisma.empty;
-
       data = await this.prisma.$queryRaw<ArticleDto[]>`
         SELECT id, title, url, summary, source, "publishedAt", "createdAt", category, "impactLevel", score
         FROM "Article"
-        ${categoryClause}
+        ${rawWhere}
         ORDER BY
           CASE "impactLevel"
             WHEN 'HIGH'   THEN 1

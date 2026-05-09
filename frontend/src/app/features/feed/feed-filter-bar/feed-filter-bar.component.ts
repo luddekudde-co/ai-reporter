@@ -7,6 +7,7 @@ import {
   NavMenuItem,
 } from '../../../design/nav-menu/nav-menu.component';
 import { DropdownComponent } from '../../../design/dropdown/dropdown.component';
+import { FeedStore } from '../feed.store';
 
 export interface SortOption {
   label: string;
@@ -32,6 +33,7 @@ export class FeedFilterBarComponent {
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  readonly feedStore = inject(FeedStore);
 
   readonly sortOptions = SORT_OPTIONS;
 
@@ -53,5 +55,9 @@ export class FeedFilterBarComponent {
       queryParams: { sort: value === 'score' ? null : value },
     });
     dd.close();
+  }
+
+  onSearchCommit(value: string): void {
+    this.feedStore.setSearch(value);
   }
 }
