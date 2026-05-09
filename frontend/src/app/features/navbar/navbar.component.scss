@@ -67,7 +67,7 @@
     color: white;
     border: none;
     border-radius: 6px;
-    padding: 8px 20px;
+    padding: 8px 12px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -102,6 +102,24 @@
     border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
+  &__user-email {
+    font-size: 13px;
+    color: var(--color-muted);
+  }
+
+  &__sign-out {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      color: white;
+    }
+  }
+
   &__mobile-link {
     font-size: 15px;
     font-weight: 500;
@@ -109,15 +127,18 @@
     text-decoration: none;
     padding: 12px 8px;
     border-radius: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
 
     &--is-active {
       color: white;
     }
 
-    &--is-disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-      pointer-events: none;
+    &:hover {
+      color: white;
     }
   }
 

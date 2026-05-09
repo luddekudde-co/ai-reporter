@@ -193,3 +193,27 @@
     }
   }
 }
+
+@media (max-width: 767px) {
+  .c-digest-page {
+    &__hero {
+      padding: 48px 20px 32px;
+    }
+
+    &__content {
+      padding: 24px 16px 48px;
+    }
+
+    &__article-list {
+      grid-template-columns: 1fr;
+    }
+
+    &__article-row {
+      padding: 16px;
+    }
+
+    &__read-link {
+      display: none;
+    }
+  }
+}
