@@ -133,6 +133,11 @@
     text-decoration: none;
     padding: 12px 8px;
     border-radius: 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
 
     &--is-active {
       color: white;
