@@ -1,4 +1,11 @@
-import { Component, inject, input } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  input,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
@@ -29,11 +36,17 @@ export const SORT_OPTIONS: SortOption[] = [
   styleUrl: './feed-filter-bar.component.scss',
 })
 export class FeedFilterBarComponent {
+  @ViewChild('searchInput')
+  private searchInputRef?: ElementRef<HTMLInputElement>;
+
   navItems = input<NavMenuItem[]>([]);
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly feedStore = inject(FeedStore);
+
+  private readonly _mobileSearchOpen = signal(false);
+  readonly mobileSearchOpen = this._mobileSearchOpen.asReadonly();
 
   readonly sortOptions = SORT_OPTIONS;
 
@@ -57,7 +70,19 @@ export class FeedFilterBarComponent {
     dd.close();
   }
 
+  openMobileSearch(): void {
+    this._mobileSearchOpen.set(true);
+    setTimeout(() => this.searchInputRef?.nativeElement.focus(), 50);
+  }
+
   onSearchCommit(value: string): void {
     this.feedStore.setSearch(value);
+  }
+
+  onBlur(value: string): void {
+    this.feedStore.setSearch(value);
+    if (!value.trim()) {
+      this._mobileSearchOpen.set(false);
+    }
   }
 }

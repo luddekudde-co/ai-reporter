@@ -1,7 +1,31 @@
-<div class="c-feed-filter-bar">
+<div
+  class="c-feed-filter-bar"
+  [class.c-feed-filter-bar--search-is-open]="mobileSearchOpen()"
+>
   <div class="c-feed-filter-bar__nav">
     <app-nav-menu [navItems]="navItems()" />
   </div>
+
+  <button
+    class="c-feed-filter-bar__search-toggle"
+    type="button"
+    aria-label="Open search"
+    (click)="openMobileSearch()"
+  >
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  </button>
 
   <div class="c-feed-filter-bar__search">
     <input
@@ -11,7 +35,7 @@
       placeholder="Search articles..."
       [value]="feedStore.searchQuery()"
       (keyup.enter)="onSearchCommit(searchInput.value)"
-      (blur)="onSearchCommit(searchInput.value)"
+      (blur)="onBlur(searchInput.value)"
     />
   </div>
 
