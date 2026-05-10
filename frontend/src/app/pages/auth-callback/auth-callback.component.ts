@@ -21,7 +21,7 @@ export class AuthCallbackComponent implements OnInit {
 
     if (token) {
       this.userStore.completeGoogleSignIn(token);
-      history.replaceState(null, '', '/');
+      history.replaceState(null, '', window.location.pathname);
     }
 
     this.router.navigateByUrl('/');
